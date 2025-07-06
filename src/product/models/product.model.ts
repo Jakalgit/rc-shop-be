@@ -1,12 +1,29 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import {
+  BeforeSave,
+  BelongsTo,
+  BelongsToMany,
+  Column,
+  DataType,
+  ForeignKey,
+  HasMany,
+  Model,
+  Table
+} from "sequelize-typescript";
+import { Detail } from "./detail.model";
+import { Preview } from "./preview.model";
+import { Tag } from "../../tags/models/tag.model";
+import { TagProduct } from "../../tags/models/tag-product.model";
+import { ProductGroup } from "../../product-group/models/product-group.model";
 
 export interface ProductCreationAttrs {
   name: string;
   availability: boolean;
   visibility: boolean;
   price: number;
+  count: number;
+  article: string;
   oldPrice?: number;
-  promotionPercents?: number;
+  promotionPercentage?: number;
   weight?: number;
   width?: number;
   height?: number;
@@ -16,7 +33,7 @@ export interface ProductCreationAttrs {
 @Table({ tableName: "products" })
 export class Product extends Model<Product, ProductCreationAttrs> {
 
-  @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
+  @Column({ type: DataType.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true })
   id: number;
 
   // Название товар
@@ -31,6 +48,14 @@ export class Product extends Model<Product, ProductCreationAttrs> {
   @Column({ type: DataType.BOOLEAN, allowNull: false })
   visibility: boolean;
 
+  // Артикул
+  @Column({ type: DataType.STRING, allowNull: false })
+  article: string;
+
+  // Кол-во
+  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
+  count: number;
+
   // Цена товара
   @Column({ type: DataType.FLOAT, allowNull: false })
   price: number;
@@ -41,7 +66,7 @@ export class Product extends Model<Product, ProductCreationAttrs> {
 
   // Проценты скидки
   @Column({ type: DataType.FLOAT })
-  promotionPercents: number;
+  promotionPercentage: number;
 
   // Вес коробки
   @Column({ type: DataType.FLOAT })
@@ -57,4 +82,25 @@ export class Product extends Model<Product, ProductCreationAttrs> {
 
   @Column({ type: DataType.FLOAT })
   length: number;
+
+  @ForeignKey(() => ProductGroup)
+  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: true, onDelete: "SET NULL" })
+  productGroupId: number;
+
+  @HasMany(() => Detail)
+  descriptions: Detail[];
+
+  @HasMany(() => Preview)
+  previews: Preview[];
+
+  @BelongsToMany(() => Tag, () => TagProduct)
+  tags: Tag[];
+
+  @BelongsTo(() => ProductGroup)
+  productGroup: ProductGroup;
+
+  @BeforeSave
+  static checkAvailability(instance: Product) {
+    instance.availability = instance.count !== 0;
+  }
 }
