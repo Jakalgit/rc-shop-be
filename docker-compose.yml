@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  nest-app:
+    container_name: nest-js-app
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
