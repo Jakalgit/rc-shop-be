@@ -264,7 +264,7 @@ export class ProductService {
     const productFields: (keyof ProductCreationAttrs)[] = [
       'name', 'availability', 'visibility', 'price',
       'oldPrice', 'promotionPercentage', 'weight',
-      'width', 'height', 'length', 'article', 'count'
+      'width', 'height', 'length', 'article', 'count', 'wholesalePrice'
     ];
 
     // Вытаскиваем атрибуты для создания продукта
@@ -540,7 +540,7 @@ export class ProductService {
       // Добавляем данные
       await Promise.all(functionsToAwait);
 
-      if (typeof dto.oldPrice !== 'undefined' && typeof dto.promotionPercentage !== 'undefined') {
+      if (typeof dto.oldPrice === 'number' && typeof dto.promotionPercentage === 'number') {
         // Добавляем тег скидки
         await this.tagService.updatePromotionForProduct({productId: product.id, transaction, toCreate: true})
       }
@@ -618,7 +618,7 @@ export class ProductService {
         this.updateTags({tagIds: dto.tagIds, productId: product.dataValues.id, transaction})
       ];
 
-      if (typeof dto.oldPrice !== 'undefined' && typeof dto.promotionPercentage !== 'undefined') {
+      if (typeof dto.oldPrice === 'number' && typeof dto.promotionPercentage === 'number') {
         functionsToAwait.push(
           // Создаем связь с тегом акции если указали скидку
           this.tagService.updatePromotionForProduct({productId: product.id, transaction, toCreate: true})

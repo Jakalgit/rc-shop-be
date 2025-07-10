@@ -31,6 +31,7 @@ export class ProductController {
     const dto: CreateProductDto = {
       ...body,
       price: Number(body.price),
+      wholesalePrice: Number(body.wholesalePrice),
       count: Number(body.count),
       availability: body.availability === 'true',
       visibility: body.visibility === 'true',
@@ -60,6 +61,7 @@ export class ProductController {
       ...body,
       id,
       price: Number(body.price),
+      wholesalePrice: Number(body.wholesalePrice),
       count: Number(body.count),
       availability: body.availability === 'true',
       visibility: body.visibility === 'true',

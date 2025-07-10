@@ -21,6 +21,10 @@ export class BaseProductDto {
   @Min(1, {message: "Product's price must be greater than or equal 1"})
   price: number;
 
+  @IsNotEmpty({message: "Attribute wholesalePrice is required"})
+  @Min(1, {message: "Product's wholesale price must be greater than or equal 1"})
+  wholesalePrice: number;
+
   @IsNotEmpty({message: "Attribute article is required"})
   article: string;
 

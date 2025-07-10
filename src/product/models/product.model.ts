@@ -20,6 +20,7 @@ export interface ProductCreationAttrs {
   availability: boolean;
   visibility: boolean;
   price: number;
+  wholesalePrice: number;
   count: number;
   article: string;
   oldPrice?: number;
@@ -56,9 +57,13 @@ export class Product extends Model<Product, ProductCreationAttrs> {
   @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
   count: number;
 
-  // Цена товара
+  // Розничная цена товара
   @Column({ type: DataType.FLOAT, allowNull: false })
   price: number;
+
+  // Оптовая цена товара
+  @Column({ type: DataType.FLOAT, allowNull: false })
+  wholesalePrice: number;
 
   // Старая цена товара (если хотим добавить скидку)
   @Column({ type: DataType.FLOAT })

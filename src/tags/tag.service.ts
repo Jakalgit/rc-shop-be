@@ -232,54 +232,61 @@ export class TagService implements OnModuleInit {
     {tagIds: number[], productId: number, transaction?: Transaction}
   ) {
 
-    const [tags, existingTagsConnection] = await Promise.all([
-      // Ищем теги с заданными id
-      await this.tagRepository.findAll({
+    if (tagIds.length === 0) {
+      await this.tagProductRepository.destroy({
         where: {
-          id: { [Op.or]: tagIds },
-        },
-        raw: true,
-      }),
-      // Ищем существующие связи между тегами и продуктом
-      this.tagProductRepository.findAll({
-        where: {
-          productId: productId,
-          tagId: { [Op.or]: tagIds }
-        },
-        raw: true,
-      })
-    ]);
-
-    // Проверяем все ли теги из tagIds существую в бд
-    if (tagIds.find(id => !tags.find(tag => tag.id === id)) && tagIds.length > 0) {
-      throw new BadRequestException("Some of tags in request doesn't exist");
-    }
-
-    // Оставляем только те id, для которых связи TagProduct не существует
-    const filteredTagIds = tagIds.filter(id => !existingTagsConnection.find(t => t.tagId === id));
-
-    // Собираем массив данных для создания связей
-    const tagProductBulkCreateAttrs = filteredTagIds.map(el => {
-      return {
-        tagId: el,
-        productId,
-      }
-    });
-
-    const [_, result] = await Promise.all([
-      // Удаляем все старые связи с этим продуктом
-      this.tagProductRepository.destroy({
-        where: {
-          productId,
-          ...(tagIds.length > 0 ? {tagId: { [Op.notIn]: tagIds }} : {})
+          productId
         },
         transaction
-      }),
-      // Создаем новые связи
-      this.tagProductRepository.bulkCreate(tagProductBulkCreateAttrs, {transaction})
-    ])
+      });
+    } else {
+      const [tags, existingTagsConnection] = await Promise.all([
+        // Ищем теги с заданными id
+        await this.tagRepository.findAll({
+          where: {
+            id: { [Op.or]: tagIds },
+          },
+          raw: true,
+        }),
+        // Ищем существующие связи между тегами и продуктом
+        this.tagProductRepository.findAll({
+          where: {
+            productId: productId,
+            tagId: { [Op.or]: tagIds }
+          },
+          raw: true,
+        })
+      ]);
 
-    return result;
+      // Проверяем все ли теги из tagIds существую в бд
+      if (tagIds.find(id => !tags.find(tag => tag.id === id))) {
+        throw new BadRequestException("Some of tags in request doesn't exist");
+      }
+
+      // Оставляем только те id, для которых связи TagProduct не существует
+      const filteredTagIds = tagIds.filter(id => !existingTagsConnection.find(t => t.tagId === id));
+
+      // Собираем массив данных для создания связей
+      const tagProductBulkCreateAttrs = filteredTagIds.map(el => {
+        return {
+          tagId: el,
+          productId,
+        }
+      });
+
+      await Promise.all([
+        // Удаляем все старые связи с этим продуктом
+        this.tagProductRepository.destroy({
+          where: {
+            productId,
+            ...(tagIds.length > 0 ? {tagId: { [Op.notIn]: tagIds }} : {})
+          },
+          transaction
+        }),
+        // Создаем новые связи
+        this.tagProductRepository.bulkCreate(tagProductBulkCreateAttrs, {transaction})
+      ]);
+    }
   }
 
   // Получение id продуктов которые использую указанные теги
