@@ -87,6 +87,32 @@ export class HomeCategoryService {
     }
   }
 
+  async updateImage(id: number, file: Express.Multer.File) {
+    const homeCategory = await this.homeCategoryRepository.findOne({
+      where: {id},
+      raw: true,
+    });
+
+    if (!homeCategory) {
+      throw new BadRequestException("Home category with id not found");
+    }
+
+    const transaction = await this.sequelize.transaction();
+
+    try {
+       await this.imageService.deleteImages({imageIds: [homeCategory.imageId], transaction});
+       const image = await this.imageService.createImage({image: file, transaction});
+
+       await this.homeCategoryRepository.update({imageId: image.id}, {where: {id}, transaction});
+
+       await transaction.commit();
+    } catch (e) {
+      await transaction.rollback();
+      console.error(e);
+      throw e;
+    }
+  }
+
   async getAll() {
     const homeCategories = await this.homeCategoryRepository.findAll({ raw: true });
     const [images, groups] = await Promise.all([

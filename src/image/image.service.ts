@@ -6,8 +6,7 @@ import { ConfigService } from "@nestjs/config";
 import { Sequelize } from "sequelize-typescript";
 import { randomUUID } from 'crypto';
 import { extname } from 'path';
-import { Op, Transaction } from "sequelize";
-import { Preview } from "../product/models/preview.model";
+import { FindOptions, Op, Transaction } from "sequelize";
 
 @Injectable()
 export class ImageService {
@@ -19,8 +18,6 @@ export class ImageService {
     private readonly imageRepository: typeof Image,
     private readonly configService: ConfigService,
     private readonly sequelize: Sequelize,
-    @InjectModel(Preview)
-    private readonly previewRepository: typeof Preview,
   ) {
     this.s3 = new S3Client({
       region: this.configService.get<string>("AWS_REGION"),
@@ -34,55 +31,92 @@ export class ImageService {
     this.bucketName = this.configService.get<string>("AWS_BUCKET_NAME");
   }
 
-  async createImage({image, transaction}: {image: Express.Multer.File, transaction?: Transaction}) {
+  async createImages({ images, transaction }: { images: Express.Multer.File[], transaction?: Transaction }) {
+    let commit = false;
     if (!transaction) {
       transaction = await this.sequelize.transaction();
+      commit = true;
     }
 
-    const extension = extname(image.originalname);
+    const allowedExtensions = ['.png', '.jpg', '.jpeg'];
+    const uploadPromises: Promise<any>[] = [];
+    const imageItems: (Image & { original: string })[] = [];
 
-    if (!['.png', '.jpg', '.jpeg'].includes(extension)) {
-      throw new BadRequestException("Allowed extensions: .png, .jpg, .jpeg");
-    }
+    for (const image of images) {
+      const extension = extname(image.originalname);
 
-    const filename = `${randomUUID()}${extension}`;
-
-    const uploadParams = {
-      Bucket: this.bucketName,
-      Key: filename,
-      Body: image.buffer,
-      ContentType: image.mimetype,
-    }
-
-    const imageItem = await this.imageRepository.create({ filename }, { transaction });
-    await this.s3.send(new PutObjectCommand(uploadParams));
-
-    return imageItem.dataValues;
-  }
-
-  async deleteImages({imageIds, transaction = null}: {imageIds: number[], transaction?: Transaction}) {
-    if (imageIds.length !== 0) {
-      const images = await this.imageRepository.findAll({
-        where: {
-          id: { [Op.or]: imageIds },
-        }
-      });
-
-      const deleteParams = {
-        Bucket: this.bucketName,
-        Delete: {
-          Objects: images.map(el => ({Key: el.dataValues.filename})),
-          Quiet: true,
-        }
+      // Проверяем расширение
+      if (!allowedExtensions.includes(extension)) {
+        throw new BadRequestException(`Allowed extensions: ${allowedExtensions.join(', ')}`);
       }
 
-      await this.imageRepository.destroy({
+      // Генерируем уникальное имя файла
+      const filename = `${randomUUID()}${extension}`;
+
+      // Параметры для загрузки в S3
+      const uploadParams = {
+        Bucket: this.bucketName,
+        Key: filename,
+        Body: image.buffer,
+        ContentType: image.mimetype,
+      };
+
+      // Создаём запись в базе данных
+      const imageItem = await this.imageRepository.create({ filename }, { transaction });
+      imageItems.push({
+        ...imageItem.dataValues,
+        original: image.originalname
+      } as Image & { original: string });
+
+      // Добавляем задачу загрузки в S3 в массив промисов
+      uploadPromises.push(this.s3.send(new PutObjectCommand(uploadParams)));
+    }
+
+    // Выполняем все загрузки в S3 параллельно
+    await Promise.all(uploadPromises);
+
+    // Если всё успешно, коммитим транзакцию
+    if (commit) {
+      await transaction.commit();
+    }
+
+    // Возвращаем массив созданных записей
+    return imageItems;
+  }
+
+  async createImage({image, transaction}: {image: Express.Multer.File, transaction?: Transaction}) {
+    return (await this.createImages({images: [image], transaction}))[0];
+  }
+
+  // Метод для удаления нескольких изображений из базы данных и S3
+  async deleteImages({ imageIds, transaction = null }: { imageIds: number[], transaction?: Transaction }) {
+    // Проверяем, что передан непустой массив ID изображений
+    if (imageIds.length !== 0) {
+      // Получаем записи изображений из базы данных по переданным ID
+      const images = await this.imageRepository.findAll({
         where: {
-          id: { [Op.or]: imageIds },
-        },
-        transaction
+          id: { [Op.or]: imageIds }, // Используем оператор OR для поиска всех ID
+        }
       });
 
+      // Формируем параметры для удаления объектов из S3
+      const deleteParams = {
+        Bucket: this.bucketName, // Имя бакета S3
+        Delete: {
+          Objects: images.map(el => ({ Key: el.dataValues.filename })), // Список ключей файлов для удаления
+          Quiet: true, // Режим тихого удаления (без подробного ответа от S3)
+        }
+      };
+
+      // Удаляем записи из базы данных
+      await this.imageRepository.destroy({
+        where: {
+          id: { [Op.or]: imageIds }, // Удаляем записи по переданным ID
+        },
+        transaction // Используем переданную или null транзакцию
+      });
+
+      // Отправляем команду на удаление файлов из S3
       await this.s3.send(new DeleteObjectsCommand(deleteParams));
     }
   }
@@ -93,5 +127,9 @@ export class ImageService {
       limit,
       offset: (page - 1) * limit,
     });
+  }
+
+  async findImages(options?: FindOptions<Image>) {
+    return await this.imageRepository.findAll(options)
   }
 }

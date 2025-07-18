@@ -23,7 +23,7 @@ export class ProductController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  @UseInterceptors(FilesInterceptor('files[]', 20))
+  @UseInterceptors(FilesInterceptor('files[]', 30))
   create(
     @UploadedFiles() files: Express.Multer.File[],
     @Body() body: any
@@ -51,7 +51,7 @@ export class ProductController {
 
   @UseGuards(JwtAuthGuard)
   @Put('/:id')
-  @UseInterceptors(FilesInterceptor('files[]', 20))
+  @UseInterceptors(FilesInterceptor('files[]', 30))
   changeProduct(
     @Param('id') id: number,
     @UploadedFiles() files: Express.Multer.File[],

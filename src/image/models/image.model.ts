@@ -1,5 +1,6 @@
 import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { Preview } from "../../product/models/preview.model";
+import { SliderItem } from "../../promotion-slider/models/slider-item";
 
 export interface ImageCreationAttrs {
   filename: string;
@@ -16,4 +17,7 @@ export class Image extends Model<Image, ImageCreationAttrs> {
 
   @HasMany(() => Preview)
   previews: Preview[];
+
+  @HasMany(() => SliderItem)
+  sliderItems: SliderItem[];
 }

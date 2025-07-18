@@ -1,6 +1,17 @@
 version: "3.8"
 
 services:
+  postgres:
+    image: postgres:15
+    container_name: postgres-database
+    restart: always
+    env_file:
+      - .env.database
+    networks:
+      - server_network
+    ports:
+      - "5432:5432"
+
   nest-app:
     container_name: nest-js-app
     restart: always
@@ -11,3 +22,9 @@ services:
       - "5000:5000"
     env_file:
       - .env
+    networks:
+      - server_network
+
+networks:
+  server_network:
+    driver: bridge

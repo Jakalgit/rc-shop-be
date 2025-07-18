@@ -319,7 +319,7 @@ export class TagService implements OnModuleInit {
       return tags.map(tag => {
         return {
           ...tag,
-          productId: tagProductConnections.find(el => el.tagId === tag.id).productId,
+          productIds: tagProductConnections.filter(el => el.tagId === tag.id).map(el => el.productId),
         }
       })
     } else {

@@ -223,9 +223,9 @@ export class ProductService {
 
         // Достаем теги для данного продукта
         const filteredTags = tags
-          .filter(tag => tag.productId === p.id)
+          .filter(tag => tag.productIds.includes(p.id))
           .map(el => {
-            const { productId, ...rest } = el;
+            const { productIds, ...rest } = el;
 
             return rest;
           })

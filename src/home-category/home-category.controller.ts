@@ -5,7 +5,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Post, UploadedFile, UseGuards,
+  Post, Put, UploadedFile, UseGuards,
   UseInterceptors
 } from "@nestjs/common";
 import { HomeCategoryService } from "./home-category.service";
@@ -38,6 +38,16 @@ export class HomeCategoryController {
   @Delete('/:id')
   deleteCategory(@Param('id', ParseIntPipe) id: number) {
     return this.homeCategoryService.delete(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/:id')
+  @UseInterceptors(FileInterceptor('image'))
+  updateImage(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFile() image?: Express.Multer.File
+  ) {
+    return this.homeCategoryService.updateImage(id, image);
   }
 
   @Get()

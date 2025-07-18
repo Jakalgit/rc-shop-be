@@ -23,6 +23,9 @@ import { UserRequest } from "./user-request/models/user-request.model";
 import { ProductGroupModule } from './product-group/product-group.module';
 import { ProductGroup } from "./product-group/models/product-group.model";
 import { HomeCategoryModule } from './home-category/home-category.module';
+import { ProfileModule } from './profile/profile.module';
+import { PromotionSliderModule } from './promotion-slider/promotion-slider.module';
+import { SliderItem } from "./promotion-slider/models/slider-item";
 
 @Module({
   imports: [
@@ -41,7 +44,7 @@ import { HomeCategoryModule } from './home-category/home-category.module';
         username: configService.get<string>('DB_USER'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        models: [Contact, Product, Tag, TagProduct, Image, Preview, Detail, Group, RepairService, UserRequest, ProductGroup],
+        models: [Contact, Product, Tag, TagProduct, Image, Preview, Detail, Group, RepairService, UserRequest, ProductGroup, SliderItem],
         autoLoadModels: true,
       })
     }),
@@ -53,7 +56,9 @@ import { HomeCategoryModule } from './home-category/home-category.module';
     RepairServiceModule,
     UserRequestModule,
     ProductGroupModule,
-    HomeCategoryModule
+    HomeCategoryModule,
+    ProfileModule,
+    PromotionSliderModule
   ],
 })
 export class AppModule {}
