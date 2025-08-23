@@ -14,7 +14,9 @@ import { ProductService } from "./product.service";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { UpdateProductDto } from "./dto/update-product.dto";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { PartnerGuard } from "../auth/guards/partner.guard";
+import { WholesalePriceAccess } from "../decorators/wholesale-price.decorator";
 
 @Controller('product')
 export class ProductController {
@@ -79,8 +81,10 @@ export class ProductController {
     return this.productService.updateProduct(dto, files);
   }
 
+  @UseGuards(PartnerGuard)
   @Get('/catalog')
   getProducts(
+    @WholesalePriceAccess() wholesalePriceAccess: boolean,
     @Query('id') id: number = -1,
     @Query('finder') finder: string = "",
     @Query('article') article: string = "",
@@ -90,14 +94,42 @@ export class ProductController {
     @Query('productGroupId') productGroupId: number = -1,
     @Query('minPrice') minPrice: number = -1,
     @Query('maxPrice') maxPrice: number = -1,
+    @Query('wMinPrice') wMinPrice: number = -1,
+    @Query('wMaxPrice') wMaxPrice: number = -1,
   ) {
-    return this.productService.getProductsByIdentifier({id, finder, article, limit, page, tagIds, productGroupId, maxPrice, minPrice});
+    return this.productService.getProducts(
+      {id, finder, article, limit, page, tagIds, productGroupId, maxPrice, minPrice, wMinPrice, wMaxPrice},
+      wholesalePriceAccess
+    );
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('/manager-catalog')
+  getProductsForManager(
+    @Query('id') id: number = -1,
+    @Query('finder') finder: string = "",
+    @Query('article') article: string = "",
+    @Query('limit') limit: number = 1,
+    @Query('page') page: number = 1,
+    @Query('tagIds', new ParseArrayPipe({ items: Number, separator: ',', optional: true })) tagIds: number[] = [],
+    @Query('productGroupId') productGroupId: number = -1,
+    @Query('minPrice') minPrice: number = -1,
+    @Query('maxPrice') maxPrice: number = -1,
+    @Query('wMinPrice') wMinPrice: number = -1,
+    @Query('wMaxPrice') wMaxPrice: number = -1,
+  ) {
+    return this.productService.getProducts(
+      {id, finder, article, limit, page, tagIds, productGroupId, maxPrice, minPrice, wMinPrice, wMaxPrice},
+      true
+    );
+  }
+
+  @UseGuards(PartnerGuard)
   @Get('/basket')
   getProductsForBasket(
+    @WholesalePriceAccess() wholesalePriceAccess: boolean,
     @Query('cart', new ParseArrayPipe({ items: String, separator: ',', optional: true })) cart: string[] = [],
   ) {
-    return this.productService.getProductForBasket(cart);
+    return this.productService.getProductForBasket(cart, wholesalePriceAccess);
   }
 }

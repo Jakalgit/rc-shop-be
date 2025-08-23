@@ -16,7 +16,7 @@ export class RepairService_Service {
 
   async setNew(dto: UpdateServiceDto) {
     if (dto.items.find(el => el.service.length < 1 || el.price.length < 1)) {
-      throw new BadRequestException("The length of a string characteristic must be at least one character.");
+      throw new BadRequestException("Строки должны содержать как минимум 1 символ");
     }
 
     const transaction = await this.sequelize.transaction();

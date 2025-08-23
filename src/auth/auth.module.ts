@@ -3,7 +3,9 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { JwtAuthGuard } from "./jwt-auth.guard";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+import { SequelizeModule } from "@nestjs/sequelize";
+import { Profile } from "../profile/models/profile.model";
 
 @Module({
   imports: [
@@ -11,12 +13,13 @@ import { JwtAuthGuard } from "./jwt-auth.guard";
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET_KEY'),
-        signOptions: { expiresIn: '1d' }
+        signOptions: { expiresIn: '7d' }
       }),
     }),
+    SequelizeModule.forFeature([Profile])
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtAuthGuard],
-  exports: [JwtModule, JwtAuthGuard]
+  exports: [JwtModule, JwtAuthGuard, AuthService]
 })
 export class AuthModule {}

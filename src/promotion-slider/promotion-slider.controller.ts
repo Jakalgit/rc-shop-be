@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, UploadedFiles, UseGuards, UseInterceptors } from "@nestjs/common";
 import { PromotionSliderService } from "./promotion-slider.service";
 import { FilesInterceptor } from "@nestjs/platform-express";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { UpdateSliderDto } from "./dto/update-slider.dto";
 
 @Controller('promotion-slider')

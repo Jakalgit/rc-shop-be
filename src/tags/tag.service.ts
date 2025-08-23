@@ -48,7 +48,7 @@ export class TagService implements OnModuleInit {
     const candidate = await this.tagRepository.findOne({ where: {name: dto.name}, raw: true });
 
     if (candidate) {
-      throw new BadRequestException("Tag with such name already exists");
+      throw new BadRequestException("Ошибка, тег с таким именем уже существует");
     }
 
     return (await this.tagRepository.create(dto)).dataValues;
@@ -65,16 +65,16 @@ export class TagService implements OnModuleInit {
     if (typeof dto.groupId === 'number') {
       const group = await this.groupRepository.findOne({where: {id: dto.groupId}, raw: true});
       if (!group) {
-        throw new BadRequestException("Group with such id doesn't exist");
+        throw new BadRequestException("Ошибка, группа с таким id не существует");
       }
     }
 
     if (!tag) {
-      throw new BadRequestException("Tag with such id doesn't exist");
+      throw new BadRequestException("Ошибка, тег с таким id не существует");
     }
 
     if (candidate) {
-      throw new BadRequestException("Tag with such name already exists");
+      throw new BadRequestException("Ошибка, тег с таким именем уже существует");
     }
 
     await tag.update(dto);
@@ -96,7 +96,7 @@ export class TagService implements OnModuleInit {
     const candidate = await this.groupRepository.findOne({where: {name: dto.name}, raw: true });
 
     if (candidate) {
-      throw new BadRequestException("Group with such name already exists");
+      throw new BadRequestException("Ошибка, группа с таким названием уже существует");
     }
 
     return await this.groupRepository.create(dto);
@@ -110,11 +110,11 @@ export class TagService implements OnModuleInit {
     ]);
 
     if (!group) {
-      throw new BadRequestException("Group with such id doesn't exist");
+      throw new BadRequestException("Ошибка, группы с таким id не существует");
     }
 
     if (candidate) {
-      throw new BadRequestException("Group with such name already exists");
+      throw new BadRequestException("шибка, группа с таким названием уже существует");
     }
 
     await group.update(dto);
@@ -260,7 +260,7 @@ export class TagService implements OnModuleInit {
 
       // Проверяем все ли теги из tagIds существую в бд
       if (tagIds.find(id => !tags.find(tag => tag.id === id))) {
-        throw new BadRequestException("Some of tags in request doesn't exist");
+        throw new BadRequestException("Ошибка, некоторые теги из запроса не существуют в базе данных");
       }
 
       // Оставляем только те id, для которых связи TagProduct не существует

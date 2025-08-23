@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { UpdateServiceDto } from "./dto/update-services.dto";
 import { RepairService_Service } from "./repair-service.service";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 
 @Controller('repair-service')
 export class RepairServiceController {

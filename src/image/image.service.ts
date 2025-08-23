@@ -47,7 +47,7 @@ export class ImageService {
 
       // Проверяем расширение
       if (!allowedExtensions.includes(extension)) {
-        throw new BadRequestException(`Allowed extensions: ${allowedExtensions.join(', ')}`);
+        throw new BadRequestException(`Допустимые расширения изображений: ${allowedExtensions.join(', ')}`);
       }
 
       // Генерируем уникальное имя файла
@@ -122,7 +122,7 @@ export class ImageService {
   }
 
   async getImages(page: number, limit: number) {
-    const images = await this.imageRepository.findAndCountAll({
+    await this.imageRepository.findAndCountAll({
       raw: true,
       limit,
       offset: (page - 1) * limit,

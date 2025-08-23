@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Put, UseGuards } from "@nestjs/common";
 import { ContactService } from "./contact.service";
 import { UpdateContactDto } from "./dto/update-contact.dto";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 
 @Controller('contact')
 export class ContactController {

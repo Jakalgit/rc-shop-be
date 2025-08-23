@@ -1,5 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { AdminPayloadType } from "../payload-types/admin-payload.type";
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -15,14 +16,19 @@ export class JwtAuthGuard implements CanActivate {
       const token = authHeader.split(' ')[1];
 
       if (bearer !== 'Bearer' || !token) {
-        throw new UnauthorizedException();
+        return false;
       }
 
-      let payload: any;
+      let payload: AdminPayloadType;
 
       payload = this.jwtService.verify(token);
 
-      req.sub = payload.sub
+      if (!payload.admin) {
+        return false;
+      }
+
+      req.account = payload;
+      req.wholesalePriceAccsess = true;
 
       return true
     } catch {

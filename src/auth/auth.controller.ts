@@ -1,7 +1,8 @@
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { LoginDto } from "./dto/login.dto";
-import { JwtAuthGuard } from "./jwt-auth.guard";
+import { LoginAdminDto } from "./dto/login-admin.dto";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+import { ProfileGuard } from "./guards/profile.guard";
 
 @Controller('auth')
 export class AuthController {
@@ -10,13 +11,19 @@ export class AuthController {
   }
 
   @Post('/login')
-  login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  login(@Body() loginDto: LoginAdminDto) {
+    return this.authService.loginAdmin(loginDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/checkAct')
   checkAct() {
+    return { isValid: true };
+  }
+
+  @UseGuards(ProfileGuard)
+  @Get('/checkProfileAct')
+  checkProfileAct() {
     return { isValid: true };
   }
 

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9; padding: 20px;">
+<table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: auto; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+  <tr>
+    <td>
+      <h2 style="color: #222;">Здравствуйте, {{name}}!</h2>
+
+      <p>
+        Вы запросили смену электронной почты для вашего аккаунта в <b>{{shopName}}</b>.
+      </p>
+
+      <p>
+        Новый адрес: <b>{{newEmail}}</b><br/>
+        Старый адрес: <b>{{oldEmail}}</b>
+      </p>
+
+      <p style="margin-top: 20px;">
+        Если вы действительно хотите использовать новый адрес, просто войдите в систему по ссылке ниже:
+      </p>
+
+      <p style="text-align: center; margin: 30px 0;">
+        <a href="{{updateUrl}}" style="display: inline-block; background: #4CAF50; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+          Подтвердить почту
+        </a>
+      </p>
+
+      <p>
+        Если вы не инициировали смену почты, проигнорируйте это письмо — старый адрес останется активным.
+      </p>
+
+      <br/>
+
+      <p style="font-size: 14px; color: #666;">
+        С уважением,<br/>
+        Команда {{shopName}}
+      </p>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

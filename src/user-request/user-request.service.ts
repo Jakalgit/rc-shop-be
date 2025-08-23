@@ -16,7 +16,7 @@ export class UserRequestService {
     const isValid = /^\+7\d{10}$/.test(dto.phone);
 
     if (!isValid) {
-      throw new BadRequestException("Invalid phone number format");
+      throw new BadRequestException("Неверный формат номера телефона");
     }
 
     await this.userRequestRepository.create(dto);
@@ -28,7 +28,7 @@ export class UserRequestService {
     });
 
     if (!request) {
-      throw new NotFoundException("User's request doesn't exist");
+      throw new NotFoundException("Ошибка, запроса не существует в базе данных");
     }
 
     await request.update({

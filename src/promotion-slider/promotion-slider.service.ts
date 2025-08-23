@@ -43,7 +43,7 @@ export class PromotionSliderService {
       if (newSlides.length > 0) {
         // Проверяем, что количество новых слайдов совпадает с количеством загруженных файлов
         if (newSlides.length !== files.length) {
-          throw new BadRequestException("The number of objects for new slides must match the number of files in the request body.");
+          throw new BadRequestException("Количество новых слайдов не совпадает с количеством загруженных файлов изображений");
         }
 
         // Проверяем, что все filenames из newSlides соответствуют файлам в массиве files
@@ -85,12 +85,12 @@ export class PromotionSliderService {
         const existingIds = existingSlides.map(el => el.id);
         const uniqueExistingIds = new Set(existingIds);
         if (uniqueExistingIds.size !== existingSlides.length) {
-          throw new BadRequestException("Array of existing slides contains duplicates by id.");
+          throw new BadRequestException("Ошибка, массив существующих слайдов содержит элементы с одинаковыми id");
         }
 
         // Проверяем, что все указанные ID существуют в базе данных
         if (dbSlides.length !== uniqueExistingIds.size) {
-          throw new BadRequestException("At least one slide in request doesn't exist in database.");
+          throw new BadRequestException("Ошибка, как минимум 1 слайд с id из запроса не существует в бд");
         }
 
         // Формируем список промисов для обновления слайдов

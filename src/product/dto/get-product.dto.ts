@@ -18,4 +18,8 @@ export class GetProductDto {
   minPrice: number;
 
   maxPrice: number;
+
+  wMinPrice: number;
+
+  wMaxPrice: number;
 }

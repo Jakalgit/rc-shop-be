@@ -11,7 +11,7 @@ import {
 import { HomeCategoryService } from "./home-category.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { CreateCategoryDto } from "./dto/create-category.dto";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 
 @Controller('home-category')
 export class HomeCategoryController {

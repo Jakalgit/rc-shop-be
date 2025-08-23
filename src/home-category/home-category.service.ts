@@ -35,7 +35,7 @@ export class HomeCategoryService {
     });
 
     if (candidate) {
-      throw new BadRequestException("Home group with such groupId already exists");
+      throw new BadRequestException("Блок группы на главной странице с таким groupId уже существует");
     }
 
     if (typeof dto.imageId === 'number') {
@@ -55,7 +55,7 @@ export class HomeCategoryService {
         throw e;
       }
     } else {
-      throw new BadRequestException("File not found");
+      throw new BadRequestException("Файл не найден");
     }
   }
 
@@ -63,7 +63,7 @@ export class HomeCategoryService {
     const candidate = await this.homeCategoryRepository.findOne({where: {id}, raw: true});
 
     if (!candidate) {
-      throw new BadRequestException("Home category with id not found");
+      throw new BadRequestException("Блок группы на главной странице с таким id не найден");
     }
 
     const existingPreviews = await this.previewRepository.findAll({
@@ -94,7 +94,7 @@ export class HomeCategoryService {
     });
 
     if (!homeCategory) {
-      throw new BadRequestException("Home category with id not found");
+      throw new BadRequestException("Блок группы на главной странице с таким id не найден");
     }
 
     const transaction = await this.sequelize.transaction();

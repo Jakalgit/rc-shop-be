@@ -26,6 +26,9 @@ import { HomeCategoryModule } from './home-category/home-category.module';
 import { ProfileModule } from './profile/profile.module';
 import { PromotionSliderModule } from './promotion-slider/promotion-slider.module';
 import { SliderItem } from "./promotion-slider/models/slider-item";
+import { Profile } from "./profile/models/profile.model";
+import { MailerModule } from './mailer/mailer.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -44,7 +47,7 @@ import { SliderItem } from "./promotion-slider/models/slider-item";
         username: configService.get<string>('DB_USER'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        models: [Contact, Product, Tag, TagProduct, Image, Preview, Detail, Group, RepairService, UserRequest, ProductGroup, SliderItem],
+        models: [Contact, Product, Tag, TagProduct, Image, Preview, Detail, Group, RepairService, UserRequest, ProductGroup, SliderItem, Profile],
         autoLoadModels: true,
       })
     }),
@@ -58,7 +61,9 @@ import { SliderItem } from "./promotion-slider/models/slider-item";
     ProductGroupModule,
     HomeCategoryModule,
     ProfileModule,
-    PromotionSliderModule
+    PromotionSliderModule,
+    MailerModule,
+    RedisModule
   ],
 })
 export class AppModule {}
