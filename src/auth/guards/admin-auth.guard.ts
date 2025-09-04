@@ -3,7 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { AdminPayloadType } from "../payload-types/admin-payload.type";
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
+export class AdminAuthGuard implements CanActivate {
 
   constructor(private readonly jwtService: JwtService) {}
 

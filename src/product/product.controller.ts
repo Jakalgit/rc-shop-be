@@ -14,7 +14,7 @@ import { ProductService } from "./product.service";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { UpdateProductDto } from "./dto/update-product.dto";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { AdminAuthGuard } from "../auth/guards/admin-auth.guard";
 import { PartnerGuard } from "../auth/guards/partner.guard";
 import { WholesalePriceAccess } from "../decorators/wholesale-price.decorator";
 
@@ -23,7 +23,7 @@ export class ProductController {
 
   constructor(private readonly productService: ProductService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Post()
   @UseInterceptors(FilesInterceptor('files[]', 30))
   create(
@@ -51,7 +51,7 @@ export class ProductController {
     return this.productService.createProduct(dto, files);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Put('/:id')
   @UseInterceptors(FilesInterceptor('files[]', 30))
   changeProduct(
@@ -103,7 +103,7 @@ export class ProductController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Get('/manager-catalog')
   getProductsForManager(
     @Query('id') id: number = -1,

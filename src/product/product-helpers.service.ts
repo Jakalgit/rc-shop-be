@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { Op, Transaction, WhereOptions } from "sequelize";
+import { AllowReadonlyArray, IncrementDecrementOptionsWithBy, Op, Transaction, WhereOptions } from "sequelize";
 import { extname } from "path";
 import { ImageService } from "../image/image.service";
 import { BaseProductDto } from "./dto/create-product.dto";
@@ -174,6 +174,9 @@ export class ProductHelpersService {
       limit: limit,
       offset: (page - 1) * limit,
       raw: true,
+      order: [
+        ['createdAt', 'DESC']
+      ]
     });
 
     // Общее количество записей
@@ -407,5 +410,12 @@ export class ProductHelpersService {
       }
       seen.add(item.index);
     }
+  }
+
+  async decrementCount(
+    fields: AllowReadonlyArray<keyof Product>,
+    options: IncrementDecrementOptionsWithBy<Product>,
+  ) {
+    await this.productRepository.decrement(fields, options);
   }
 }

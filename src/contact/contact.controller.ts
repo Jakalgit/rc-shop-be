@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Put, UseGuards } from "@nestjs/common";
 import { ContactService } from "./contact.service";
 import { UpdateContactDto } from "./dto/update-contact.dto";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { AdminAuthGuard } from "../auth/guards/admin-auth.guard";
 
 @Controller('contact')
 export class ContactController {
@@ -12,7 +12,7 @@ export class ContactController {
   }
 
   // Изменить контактные данные
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Put()
   async update(@Body() dto: UpdateContactDto) {
     return await this.contactService.updateContactData(dto);

@@ -3,7 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+import { AdminAuthGuard } from "./guards/admin-auth.guard";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { Profile } from "../profile/models/profile.model";
 
@@ -19,7 +19,7 @@ import { Profile } from "../profile/models/profile.model";
     SequelizeModule.forFeature([Profile])
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtAuthGuard],
-  exports: [JwtModule, JwtAuthGuard, AuthService]
+  providers: [AuthService, AdminAuthGuard],
+  exports: [JwtModule, AdminAuthGuard, AuthService]
 })
 export class AuthModule {}

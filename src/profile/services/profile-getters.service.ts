@@ -12,7 +12,7 @@ export class ProfileGettersService {
   ) {
   }
 
-  async getProfile(id: string) {
+  async getProfile(id: string, includeOrders: boolean = false) {
     const profile = await this.profileRepository.findOne({
       where: {id},
       raw: true,

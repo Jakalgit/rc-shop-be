@@ -14,6 +14,7 @@ import { Preview } from "./preview.model";
 import { Tag } from "../../tags/models/tag.model";
 import { TagProduct } from "../../tags/models/tag-product.model";
 import { ProductGroup } from "../../product-group/models/product-group.model";
+import { OrderItem } from "../../order/models/order_item.model";
 
 export interface ProductCreationAttrs {
   name: string;
@@ -97,6 +98,9 @@ export class Product extends Model<Product, ProductCreationAttrs> {
 
   @HasMany(() => Preview)
   previews: Preview[];
+
+  @HasMany(() => OrderItem)
+  orderItems: OrderItem[];
 
   @BelongsToMany(() => Tag, () => TagProduct)
   tags: Tag[];

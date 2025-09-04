@@ -29,6 +29,10 @@ import { SliderItem } from "./promotion-slider/models/slider-item";
 import { Profile } from "./profile/models/profile.model";
 import { MailerModule } from './mailer/mailer.module';
 import { RedisModule } from './redis/redis.module';
+import { OrderModule } from './order/order.module';
+import { Order } from "./order/models/order.model";
+import { OrderItem } from "./order/models/order_item.model";
+import { OrderAction } from "./order/models/order_action.model";
 
 @Module({
   imports: [
@@ -47,7 +51,8 @@ import { RedisModule } from './redis/redis.module';
         username: configService.get<string>('DB_USER'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        models: [Contact, Product, Tag, TagProduct, Image, Preview, Detail, Group, RepairService, UserRequest, ProductGroup, SliderItem, Profile],
+        models: [Contact, Product, Tag, TagProduct, Image, Preview, Detail,
+          Group, RepairService, UserRequest, ProductGroup, SliderItem, Profile, Order, OrderItem, OrderAction],
         autoLoadModels: true,
       })
     }),
@@ -63,7 +68,8 @@ import { RedisModule } from './redis/redis.module';
     ProfileModule,
     PromotionSliderModule,
     MailerModule,
-    RedisModule
+    RedisModule,
+    OrderModule
   ],
 })
 export class AppModule {}

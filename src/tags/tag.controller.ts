@@ -4,7 +4,7 @@ import { CreateTagDto } from "./dto/create-tag.dto";
 import { UpdateTagDto } from "./dto/update-tag.dto";
 import { CreateGroupDto } from "./dto/create-group.dto";
 import { UpdateGroupDto } from "./dto/update-group.dto";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { AdminAuthGuard } from "../auth/guards/admin-auth.guard";
 
 @Controller('tag')
 export class TagController {
@@ -14,37 +14,37 @@ export class TagController {
   ) {
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Post('/create-tag')
   createTag(@Body() tag: CreateTagDto) {
     return this.tagService.createTag(tag);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Put('/update-tag')
   updateTag(@Body() tag: UpdateTagDto) {
     return this.tagService.updateTag(tag);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Delete('/delete-tag/:identifier')
   deleteTag(@Param('identifier') identifier: number | string) {
     return this.tagService.deleteTag(identifier);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Post('/create-group')
   createGroup(@Body() dto: CreateGroupDto) {
     return this.tagService.createGroup(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Put('/update-group')
   updateGroup(@Body() dto: UpdateGroupDto) {
     return this.tagService.updateGroup(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Delete('/delete-group/:identifier')
   deleteGroup(@Param('identifier') identifier: number | string) {
     return this.tagService.deleteGroup(identifier)
@@ -55,7 +55,7 @@ export class TagController {
     return this.tagService.getAllUserTags();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Get('/all')
   getAllTags(
     @Query('groupId') groupId: number = undefined,
@@ -63,7 +63,7 @@ export class TagController {
     return this.tagService.getAllTags(groupId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Get('/all/groups')
   getAllGroups() {
     return this.tagService.getAllGroups();

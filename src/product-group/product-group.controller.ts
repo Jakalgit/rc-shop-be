@@ -1,7 +1,7 @@
 import { Controller, Delete, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { ProductGroupService } from "./product-group.service";
 import { CreateProductGroupDto } from "./dto/create-product-group.dto";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { AdminAuthGuard } from "../auth/guards/admin-auth.guard";
 import { UpdateProductGroupDto } from "./dto/update-product-group.dto";
 
 @Controller('product-group')
@@ -11,19 +11,19 @@ export class ProductGroupController {
     private readonly productGroupService: ProductGroupService
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Post()
   create(dto: CreateProductGroupDto) {
     return this.productGroupService.create(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Put()
   update(dto: UpdateProductGroupDto) {
     return this.productGroupService.update(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Delete('/:id')
   delete(@Param('id') id: number) {
     return this.productGroupService.delete(id);

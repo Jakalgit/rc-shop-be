@@ -352,6 +352,7 @@ export class ProductService {
         article: { [Op.or]: articles },
         availability: true,
         visibility: true,
+        count: { [Op.gte]: 1 }
       },
       raw: true,
     });

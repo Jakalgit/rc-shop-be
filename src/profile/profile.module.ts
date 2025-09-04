@@ -16,6 +16,6 @@ import { ProfileGettersService } from "./services/profile-getters.service";
   ],
   providers: [ProfileService, ProfileUpdatesService, ProfileGettersService],
   controllers: [ProfileController],
-  exports: [ProfileService],
+  exports: [ProfileService, ProfileGettersService],
 })
 export class ProfileModule {}

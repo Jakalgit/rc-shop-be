@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, UploadedFiles, UseGuards, UseInterceptors } from "@nestjs/common";
 import { PromotionSliderService } from "./promotion-slider.service";
 import { FilesInterceptor } from "@nestjs/platform-express";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { AdminAuthGuard } from "../auth/guards/admin-auth.guard";
 import { UpdateSliderDto } from "./dto/update-slider.dto";
 
 @Controller('promotion-slider')
@@ -11,7 +11,7 @@ export class PromotionSliderController {
     private readonly promotionSliderService: PromotionSliderService
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Post()
   @UseInterceptors(FilesInterceptor('files[]', 30))
   update(

@@ -11,7 +11,7 @@ import {
 import { HomeCategoryService } from "./home-category.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { CreateCategoryDto } from "./dto/create-category.dto";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { AdminAuthGuard } from "../auth/guards/admin-auth.guard";
 
 @Controller('home-category')
 export class HomeCategoryController {
@@ -19,7 +19,7 @@ export class HomeCategoryController {
   constructor(private readonly homeCategoryService: HomeCategoryService) {
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   createCategory(
@@ -34,13 +34,13 @@ export class HomeCategoryController {
     return this.homeCategoryService.create(dto, image);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Delete('/:id')
   deleteCategory(@Param('id', ParseIntPipe) id: number) {
     return this.homeCategoryService.delete(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Put('/:id')
   @UseInterceptors(FileInterceptor('image'))
   updateImage(

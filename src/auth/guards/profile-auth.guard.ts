@@ -6,7 +6,7 @@ import { InjectModel } from "@nestjs/sequelize";
 import { Profile } from "../../profile/models/profile.model";
 
 @Injectable()
-export class ProfileGuard implements CanActivate {
+export class ProfileAuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     @InjectModel(Profile)
@@ -53,7 +53,6 @@ export class ProfileGuard implements CanActivate {
       }
       req.account = payload;
     } catch (e) {
-      console.error(e);
       return false;
     }
 

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { UserRequestService } from "./user-request.service";
 import { CreateRequestDto } from "./dto/create-request.dto";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { AdminAuthGuard } from "../auth/guards/admin-auth.guard";
 
 @Controller('user-request')
 export class UserRequestController {
@@ -14,13 +14,13 @@ export class UserRequestController {
     return this.userRequestService.create(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Put('/set-checked/:id')
   setChecked(@Param('id') id: number) {
     return this.userRequestService.setChecked(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Get()
   getRequest(
     @Query('page') page: number = 1,

@@ -21,6 +21,7 @@ import { ProductUpdatesService } from "./product-updates.service";
     AuthModule
   ],
   controllers: [ProductController],
-  providers: [ProductService, ProductHelpersService, ProductUpdatesService]
+  providers: [ProductService, ProductHelpersService, ProductUpdatesService],
+  exports: [ProductService, ProductHelpersService]
 })
 export class ProductModule {}

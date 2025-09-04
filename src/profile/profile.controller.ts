@@ -3,13 +3,13 @@ import { ProfileService } from "./services/profile.service";
 import { CreatePartnerDto } from "./dto/create-partner.dto";
 import { UpdatePartnerStatusDto } from "./dto/update-partner-status.dto";
 import { GetPartnersProfileDto } from "./dto/get-partners-profile.dto";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { AdminAuthGuard } from "../auth/guards/admin-auth.guard";
 import { LoginProfileDto } from "../auth/dto/login-profile.dto";
 import { RequestEmailUpdateDto } from "./dto/request-email-update.dto";
 import { ConfirmedEmailUpdateDto } from "./dto/confirm-email-update.dto";
 import { UpdatePasswordDto } from "./dto/update-password.dto";
 import { ProfileId } from "../decorators/profile-id.decorator";
-import { ProfileGuard } from "../auth/guards/profile.guard";
+import { ProfileAuthGuard } from "../auth/guards/profile-auth.guard";
 import { ProfileUpdatesService } from "./services/profile-updates.service";
 import { ProfileGettersService } from "./services/profile-getters.service";
 import { ResetPasswordEmailDto } from "./dto/reset-password/reset-password-email.dto";
@@ -34,19 +34,19 @@ export class ProfileController {
     return this.profileService.login(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Put('/partner-status')
   updatePartnerProfileStatus(@Body() dto: UpdatePartnerStatusDto) {
     return this.profileUpdatesService.updatePartnerProfileStatus(dto.id, dto.status);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Get('/partners')
   getPartnersProfiles(@Query(new ValidationPipe({ transform: true })) query: GetPartnersProfileDto) {
     return this.profileGettersService.getPartnerProfiles(query);
   }
 
-  @UseGuards(ProfileGuard)
+  @UseGuards(ProfileAuthGuard)
   @Post('/update-email')
   requestUpdateEmail(@ProfileId() id: string, @Body() dto: RequestEmailUpdateDto) {
     return this.profileService.requestEmailUpdate(id, dto);
@@ -67,7 +67,7 @@ export class ProfileController {
     return this.profileService.confirmResetPassword(dto);
   }
 
-  @UseGuards(ProfileGuard)
+  @UseGuards(ProfileAuthGuard)
   @Post('/update-password')
   updatePassword(
     @ProfileId() id: string,
@@ -76,7 +76,7 @@ export class ProfileController {
     return this.profileUpdatesService.updatePassword(id, dto);
   }
 
-  @UseGuards(ProfileGuard)
+  @UseGuards(ProfileAuthGuard)
   @Get()
   getProfile(
     @ProfileId() id: string,
@@ -84,7 +84,7 @@ export class ProfileController {
     return this.profileGettersService.getProfile(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @Delete('/:id')
   deleteProfile(@Param('id') id: string) {
     return this.profileUpdatesService.deleteProfile(id);
