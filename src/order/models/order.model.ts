@@ -25,13 +25,13 @@ export interface OrderCreationAttrs {
   address?: string;
   deliveryMethod: DeliveryMethodEnum;
   deliveryPrice?: number;
-  deliveredAt?: Date;
+  deliveredAt?: string;
   deliveryStatus?: DeliveryStatusEnum;
   trackingNumber?: string;
   paymentMethod: PaymentMethodEnum;
   subtotal: number;
   discount?: number;
-  paidAt?: Date;
+  paidAt?: string;
   paymentStatus?: PaymentStatusEnum;
   transactionId?: string;
   comment?: string;
@@ -69,7 +69,7 @@ export class Order extends Model<Order, OrderCreationAttrs> {
   deliveryPrice: number;
 
   @Column({ type: DataType.DATE })
-  deliveredAt: Date;
+  deliveredAt: string;
 
   @Column({ type: DataType.ENUM(...Object.values(DeliveryStatusEnum)) })
   deliveryStatus: DeliveryStatusEnum;
@@ -87,7 +87,7 @@ export class Order extends Model<Order, OrderCreationAttrs> {
   discount: number;
 
   @Column({ type: DataType.DATE })
-  paidAt: Date;
+  paidAt: string;
 
   @Column({ type: DataType.ENUM(...Object.values(PaymentStatusEnum)) })
   paymentStatus: PaymentStatusEnum;

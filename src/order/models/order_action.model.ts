@@ -5,8 +5,8 @@ import { Order } from "./order.model";
 
 export interface OrderActionCreationAttrs {
   actionType: OrderActionEnum;
-  oldValue?: JSON;
-  newValue?: JSON;
+  oldValue?: string;
+  newValue?: string;
   actorType: OrderActionActorEnum;
   userAgent?: string;
   ipAddress?: string;
@@ -25,11 +25,11 @@ export class OrderAction extends Model<OrderAction, OrderActionCreationAttrs> {
   @Column({ type: DataType.ENUM(...Object.values(OrderActionEnum)), allowNull: false })
   actionType: OrderActionEnum;
 
-  @Column({ type: DataType.JSONB })
-  oldValue: JSON;
+  @Column({ type: DataType.TEXT })
+  oldValue: string;
 
-  @Column({ type: DataType.JSONB })
-  newValue: JSON;
+  @Column({ type: DataType.TEXT })
+  newValue: string;
 
   @Column({ type: DataType.ENUM(...Object.values(OrderActionActorEnum)), allowNull: false })
   actorType: OrderActionActorEnum;

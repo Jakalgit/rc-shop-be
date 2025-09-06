@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Подтверждение заказа №{{orderNumber}}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: #4CAF50;
+      color: white;
+      padding: 16px;
+      text-align: center;
+    }
+    .content {
+      padding: 20px;
+    }
+    .content p {
+      margin: 8px 0;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .footer {
+      font-size: 12px;
+      text-align: center;
+      color: #777;
+      padding: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h2>Спасибо за ваш заказ!</h2>
+  </div>
+  <div class="content">
+    <p>Здравствуйте, {{customerName}}!</p>
+    <p>Ваш заказ <strong>№{{orderNumber}}</strong> успешно подтверждён,
+      <strong>вам позвонит наш представитель для уточнения деталей заказа, после этого вы сможете его забрать или мы сможем его отправить, если вы выбрали доставку.</strong>
+    </p>
+    <p>Вы можете просмотреть детали заказа по ссылке ниже:</p>
+
+    <a href="{{orderUrl}}" class="btn">Перейти к заказу</a>
+
+    <hr />
+
+    <p><strong>Информация о заказе:</strong></p>
+    <ul>
+      <li>Дата заказа: {{orderDate}}</li>
+      <li>Сумма заказа: {{orderTotal}}</li>
+      <li>Статус: {{orderStatus}}</li>
+    </ul>
+
+    <p>Если у вас возникнут вопросы, свяжитесь с нашей поддержкой.</p>
+  </div>
+  <div class="footer">
+    &copy; WORK-RC. Все права защищены.
+  </div>
+</div>
+</body>
+</html>

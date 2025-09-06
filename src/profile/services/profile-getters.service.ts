@@ -12,7 +12,7 @@ export class ProfileGettersService {
   ) {
   }
 
-  async getProfile(id: string, includeOrders: boolean = false) {
+  async getProfile(id: string) {
     const profile = await this.profileRepository.findOne({
       where: {id},
       raw: true,
@@ -22,8 +22,6 @@ export class ProfileGettersService {
     if (!profile) {
       throw new NotFoundException("Профиль не существует");
     }
-
-    // TODO: Добавить получение списка заказов для пользователя
 
     return profile;
   }

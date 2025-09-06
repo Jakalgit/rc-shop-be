@@ -9,6 +9,8 @@ import { ProfileModule } from "../profile/profile.module";
 import { ProductModule } from "../product/product.module";
 import { AuthModule } from "../auth/auth.module";
 import { Profile } from "../profile/models/profile.model";
+import { OrderHelpersService } from "./order-helpers.service";
+import { MailerModule } from "../mailer/mailer.module";
 
 @Module({
   imports: [
@@ -16,8 +18,9 @@ import { Profile } from "../profile/models/profile.model";
     SequelizeModule.forFeature([Order, OrderItem, OrderAction, Profile]),
     ProfileModule,
     ProductModule,
+    MailerModule,
   ],
-  providers: [OrderService],
+  providers: [OrderService, OrderHelpersService],
   controllers: [OrderController]
 })
 export class OrderModule {}
