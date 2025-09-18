@@ -11,8 +11,8 @@ import { TagService } from '../tags/tag.service';
 import { GetProductDto } from './dto/get-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { applyRangeFilter } from '../helpers/applyRangeFilter';
-import { ProductHelpersService } from "./product-helpers.service";
-import { ProductUpdatesService } from "./product-updates.service";
+import { ProductHelpersService } from './product-helpers.service';
+import { ProductUpdatesService } from './product-updates.service';
 
 @Injectable()
 export class ProductService {
@@ -31,7 +31,10 @@ export class ProductService {
 
   // Создание продукта
   async createProduct(dto: CreateProductDto, files: Express.Multer.File[]) {
-    await this.productHelpersService.checkClassValidatorErrors(CreateProductDto, dto);
+    await this.productHelpersService.checkClassValidatorErrors(
+      CreateProductDto,
+      dto,
+    );
 
     const candidates = await this.productRepository.findAll({
       where: {
@@ -59,11 +62,14 @@ export class ProductService {
       DetailEnum.SPECIFICATION,
     );
     const equipment = this.productHelpersService.reformatDetails(
-      dto.details, DetailEnum.EQUIPMENT
+      dto.details,
+      DetailEnum.EQUIPMENT,
     );
 
     if (descriptions.length === 0) {
-      throw new BadRequestException('Товар должен иметь как минимум 1 описание (description)');
+      throw new BadRequestException(
+        'Товар должен иметь как минимум 1 описание (description)',
+      );
     }
 
     // Проверяем информацию
@@ -124,11 +130,12 @@ export class ProductService {
       }
 
       // Загружаем файлы и создаем новые картинки
-      const createdImages = await this.productHelpersService.createMultipleImages({
-        files,
-        dtoFiles,
-        transaction,
-      });
+      const createdImages =
+        await this.productHelpersService.createMultipleImages({
+          files,
+          dtoFiles,
+          transaction,
+        });
 
       // Данные для создания превью
       const previewBulkCreateData = [...dtoPreviews, ...createdImages].map(
@@ -156,7 +163,10 @@ export class ProductService {
 
   // Обновление данных о продукте
   async updateProduct(dto: UpdateProductDto, files: Express.Multer.File[]) {
-    await this.productHelpersService.checkClassValidatorErrors(UpdateProductDto, dto);
+    await this.productHelpersService.checkClassValidatorErrors(
+      UpdateProductDto,
+      dto,
+    );
 
     const product = await this.productRepository.findByPk(dto.id);
 
@@ -170,9 +180,7 @@ export class ProductService {
       });
 
       if (candidateArticle) {
-        throw new BadRequestException(
-          'Товар с таким артиклем уже существует',
-        );
+        throw new BadRequestException('Товар с таким артиклем уже существует');
       }
     }
 
@@ -198,7 +206,9 @@ export class ProductService {
     );
 
     if (descriptions.length === 0) {
-      throw new BadRequestException('Товар должен иметь как минимум 1 описание (description)');
+      throw new BadRequestException(
+        'Товар должен иметь как минимум 1 описание (description)',
+      );
     }
 
     const transaction = await this.sequelize.transaction();
@@ -270,10 +280,7 @@ export class ProductService {
   }
 
   // Получение информации о товарах
-  async getProducts(
-    dto: GetProductDto,
-    wholesalePriceAccess: boolean,
-  ) {
+  async getProducts(dto: GetProductDto, wholesalePriceAccess: boolean) {
     let options = {};
     let priceOptions = {};
     let wholesalePriceOptions = {};
@@ -352,7 +359,7 @@ export class ProductService {
         article: { [Op.or]: articles },
         availability: true,
         visibility: true,
-        count: { [Op.gte]: 1 }
+        count: { [Op.gte]: 1 },
       },
       raw: true,
     });
@@ -361,26 +368,38 @@ export class ProductService {
       return [];
     }
 
-    const productsData = await this.productHelpersService.collectDataForProduct({
-      options: {
-        article: { [Op.or]: products.map((el) => el.article) },
+    const productsData = await this.productHelpersService.collectDataForProduct(
+      {
+        options: {
+          article: { [Op.or]: products.map((el) => el.article) },
+        },
+        limit: products.length,
+        page: 1,
+        isPartner: wholesalePriceAccess,
       },
-      limit: products.length,
-      page: 1,
-      isPartner: wholesalePriceAccess,
-    });
+    );
 
     if (wholesalePriceAccess) {
-      productsData.records = productsData.records.map(el => {
+      productsData.records = productsData.records.map((el) => {
         const newEl = {
           ...el,
-          price: el.wholesalePrice
-        }
+          price: el.wholesalePrice,
+        };
         delete newEl.wholesalePrice;
         return newEl;
       });
     }
 
     return productsData.records;
+  }
+
+  async getProductsSitemap() {
+    return await this.productRepository.findAll({
+      where: { visibility: true },
+      raw: true,
+      attributes: {
+        include: ['article', 'updatedAt'],
+      },
+    });
   }
 }

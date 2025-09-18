@@ -33,6 +33,8 @@ import { OrderModule } from './order/order.module';
 import { Order } from "./order/models/order.model";
 import { OrderItem } from "./order/models/order_item.model";
 import { OrderAction } from "./order/models/order_action.model";
+import { PageBlockModule } from './page-block/page-block.module';
+import { PageBlock } from "./page-block/models/page-block.model";
 
 @Module({
   imports: [
@@ -51,7 +53,7 @@ import { OrderAction } from "./order/models/order_action.model";
         username: configService.get<string>('DB_USER'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        models: [Contact, Product, Tag, TagProduct, Image, Preview, Detail,
+        models: [Contact, Product, Tag, TagProduct, Image, Preview, Detail, PageBlock,
           Group, RepairService, UserRequest, ProductGroup, SliderItem, Profile, Order, OrderItem, OrderAction],
         autoLoadModels: true,
       })
@@ -69,7 +71,8 @@ import { OrderAction } from "./order/models/order_action.model";
     PromotionSliderModule,
     MailerModule,
     RedisModule,
-    OrderModule
+    OrderModule,
+    PageBlockModule
   ],
 })
 export class AppModule {}

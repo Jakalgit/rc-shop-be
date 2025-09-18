@@ -132,4 +132,9 @@ export class ProductController {
   ) {
     return this.productService.getProductForBasket(cart, wholesalePriceAccess);
   }
+
+  @Get('/sitemap')
+  getProductsSitemap() {
+    return this.productService.getProductsSitemap();
+  }
 }

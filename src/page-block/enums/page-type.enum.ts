@@ -1,0 +1,4 @@
+
+export enum PageEnum {
+  DELIVERY_AND_PAYMENTS = "DELIVERY_AND_PAYMENTS",
+}
