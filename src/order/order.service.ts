@@ -1,28 +1,25 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Order } from './models/order.model';
-import { OrderItem, OrderItemCreationAttrs } from './models/order_item.model';
-import { OrderAction } from './models/order_action.model';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { ProfileGettersService } from '../profile/services/profile-getters.service';
-import { ProductService } from '../product/product.service';
-import { ProfileEnum } from '../enums/profile.enum';
-import { DeliveryMethodEnum } from '../enums/order/delivery-method.enum';
-import { Sequelize } from 'sequelize-typescript';
-import { OrderActionEnum } from '../enums/order/order-action.enum';
-import { OrderActionActorEnum } from '../enums/order/order-action-actor.enum';
-import * as generatePassword from 'generate-password';
-import { Op } from 'sequelize';
-import { ProductHelpersService } from '../product/product-helpers.service';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { OrderHelpersService } from './order-helpers.service';
-import { OrderStatusEnum } from '../enums/order/order-status.enum';
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { InjectModel } from "@nestjs/sequelize";
+import { Order } from "./models/order.model";
+import { OrderItem, OrderItemCreationAttrs } from "./models/order_item.model";
+import { OrderAction } from "./models/order_action.model";
+import { CreateOrderDto } from "./dto/create-order.dto";
+import { ProfileGettersService } from "../profile/services/profile-getters.service";
+import { ProductService } from "../product/product.service";
+import { ProfileEnum } from "../enums/profile.enum";
+import { DeliveryMethodEnum } from "../enums/order/delivery-method.enum";
+import { Sequelize } from "sequelize-typescript";
+import { OrderActionEnum } from "../enums/order/order-action.enum";
+import { OrderActionActorEnum } from "../enums/order/order-action-actor.enum";
+import * as generatePassword from "generate-password";
+import { Op } from "sequelize";
+import { ProductHelpersService } from "../product/product-helpers.service";
+import { UpdateOrderDto } from "./dto/update-order.dto";
+import { OrderHelpersService } from "./order-helpers.service";
+import { OrderStatusEnum } from "../enums/order/order-status.enum";
 import { ConfigService } from "@nestjs/config";
 import { MailerService } from "../mailer/mailer.service";
+import { PaymentMethodEnum } from "../enums/order/payment-method.enum";
 
 @Injectable()
 export class OrderService {
@@ -46,6 +43,14 @@ export class OrderService {
     this.MAIN_HOST = configService.get<string>('MAIN_HOST');
   }
 
+  private checkOrderValues(dto: CreateOrderDto) {
+    // TODO: Добавить другие проверки значений
+
+    if (dto.deliveryMethod !== DeliveryMethodEnum.SELF_PICKUP && dto.paymentMethod === PaymentMethodEnum.CASH_ON_DELIVERY) {
+      throw new BadRequestException("Для оплаты наличными выберите способ доставки \"Самовывоз\"");
+    }
+  }
+
   async create(dto: CreateOrderDto, profileId?: string) {
     // Находим профиль пользователя
     const profile =
@@ -67,7 +72,8 @@ export class OrderService {
     const productIds = products.map((p) => p.id);
 
     // TODO: Добавить проверку на кол-во заказываемого товара
-    // TODO: Добавить другие проверки значений
+
+    this.checkOrderValues(dto);
 
     if (articles.some((article) => !productArticles.has(article))) {
       throw new BadRequestException(
