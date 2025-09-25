@@ -25,6 +25,9 @@ export class ContactService implements OnModuleInit{
         email: "",
         phone: "",
         address: "",
+        tgIdentifier: "",
+        whatsappIdentifier: "",
+        workTime: ""
       });
     }
   }

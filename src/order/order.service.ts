@@ -1,25 +1,30 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
-import { Order } from "./models/order.model";
-import { OrderItem, OrderItemCreationAttrs } from "./models/order_item.model";
-import { OrderAction } from "./models/order_action.model";
-import { CreateOrderDto } from "./dto/create-order.dto";
-import { ProfileGettersService } from "../profile/services/profile-getters.service";
-import { ProductService } from "../product/product.service";
-import { ProfileEnum } from "../enums/profile.enum";
-import { DeliveryMethodEnum } from "../enums/order/delivery-method.enum";
-import { Sequelize } from "sequelize-typescript";
-import { OrderActionEnum } from "../enums/order/order-action.enum";
-import { OrderActionActorEnum } from "../enums/order/order-action-actor.enum";
-import * as generatePassword from "generate-password";
-import { Op } from "sequelize";
-import { ProductHelpersService } from "../product/product-helpers.service";
-import { UpdateOrderDto } from "./dto/update-order.dto";
-import { OrderHelpersService } from "./order-helpers.service";
-import { OrderStatusEnum } from "../enums/order/order-status.enum";
-import { ConfigService } from "@nestjs/config";
-import { MailerService } from "../mailer/mailer.service";
-import { PaymentMethodEnum } from "../enums/order/payment-method.enum";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { Order } from './models/order.model';
+import { OrderItem, OrderItemCreationAttrs } from './models/order_item.model';
+import { OrderAction } from './models/order_action.model';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { ProfileGettersService } from '../profile/services/profile-getters.service';
+import { ProductService } from '../product/product.service';
+import { ProfileEnum } from '../enums/profile.enum';
+import { DeliveryMethodEnum } from '../enums/order/delivery-method.enum';
+import { Sequelize } from 'sequelize-typescript';
+import { OrderActionEnum } from '../enums/order/order-action.enum';
+import { OrderActionActorEnum } from '../enums/order/order-action-actor.enum';
+import * as generatePassword from 'generate-password';
+import { Op, Transaction } from 'sequelize';
+import { ProductHelpersService } from '../product/product-helpers.service';
+import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrderHelpersService } from './order-helpers.service';
+import { OrderStatusEnum } from '../enums/order/order-status.enum';
+import { ConfigService } from '@nestjs/config';
+import { MailerService } from '../mailer/mailer.service';
+import { PaymentMethodEnum } from '../enums/order/payment-method.enum';
+import ISOLATION_LEVELS = Transaction.ISOLATION_LEVELS;
 
 @Injectable()
 export class OrderService {
@@ -46,8 +51,13 @@ export class OrderService {
   private checkOrderValues(dto: CreateOrderDto) {
     // TODO: Добавить другие проверки значений
 
-    if (dto.deliveryMethod !== DeliveryMethodEnum.SELF_PICKUP && dto.paymentMethod === PaymentMethodEnum.CASH_ON_DELIVERY) {
-      throw new BadRequestException("Для оплаты наличными выберите способ доставки \"Самовывоз\"");
+    if (
+      dto.deliveryMethod !== DeliveryMethodEnum.SELF_PICKUP &&
+      dto.paymentMethod === PaymentMethodEnum.CASH_ON_DELIVERY
+    ) {
+      throw new BadRequestException(
+        'Для оплаты наличными выберите способ доставки "Самовывоз"',
+      );
     }
   }
 
@@ -98,7 +108,9 @@ export class OrderService {
       0,
     );
 
-    const transaction = await this.sequelize.transaction();
+    const transaction = await this.sequelize.transaction({
+      isolationLevel: ISOLATION_LEVELS.SERIALIZABLE,
+    });
     try {
       // Создаем заказ
       const orderNumber =
@@ -212,19 +224,20 @@ export class OrderService {
           customerName: order.guestName,
           orderNumber: order.orderNumber,
           orderUrl: `${this.MAIN_HOST}/order/${dto.orderNumber}`,
-          orderDate: (new Date(order.createdAt)).toLocaleDateString("ru-RU", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
+          orderDate: new Date(order.createdAt).toLocaleDateString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
           }),
-          orderTotal: order.subtotal.toLocaleString('ru-RU', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }) + ' ₽',
-          orderStatus: "Подтверждён",
-        }
+          orderTotal:
+            order.subtotal.toLocaleString('ru-RU', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }) + ' ₽',
+          orderStatus: 'Подтверждён',
+        },
       });
     }
 

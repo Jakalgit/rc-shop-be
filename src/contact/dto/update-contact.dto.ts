@@ -10,4 +10,13 @@ export class UpdateContactDto {
 
   @IsString()
   phone: string;
+
+  @IsString()
+  tgIdentifier: string;
+
+  @IsString()
+  whatsappIdentifier: string;
+
+  @IsString()
+  workTime: string;
 }
