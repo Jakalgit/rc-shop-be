@@ -39,7 +39,7 @@ export class ImageService {
     }
 
     const allowedExtensions = ['.png', '.jpg', '.jpeg'];
-    const uploadPromises: Promise<any>[] = [];
+    const uploadTasks: Promise<any>[] = [];
     const imageItems: (Image & { original: string })[] = [];
 
     for (const image of images) {
@@ -68,12 +68,14 @@ export class ImageService {
         original: image.originalname
       } as Image & { original: string });
 
-      // Добавляем задачу загрузки в S3 в массив промисов
-      uploadPromises.push(this.s3.send(new PutObjectCommand(uploadParams)));
+      // Добавляем задачу загрузки в S3 в массив задач после коммита
+      transaction.afterCommit(async () => {
+        await this.s3.send(new PutObjectCommand(uploadParams))
+      })
     }
 
     // Выполняем все загрузки в S3 параллельно
-    await Promise.all(uploadPromises);
+    await Promise.all(uploadTasks);
 
     // Если всё успешно, коммитим транзакцию
     if (commit) {
@@ -116,8 +118,15 @@ export class ImageService {
         transaction // Используем переданную или null транзакцию
       });
 
-      // Отправляем команду на удаление файлов из S3
-      await this.s3.send(new DeleteObjectsCommand(deleteParams));
+      if (transaction) {
+        // Откладываем удаление из S3 до момента успешного коммита
+        transaction.afterCommit(async () => {
+          await this.s3.send(new DeleteObjectsCommand(deleteParams));
+        });
+      } else {
+        // Если транзакции нет, удаляем сразу
+        await this.s3.send(new DeleteObjectsCommand(deleteParams));
+      }
     }
   }
 

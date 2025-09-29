@@ -17,6 +17,7 @@ import { UpdateProductDto } from "./dto/update-product.dto";
 import { AdminAuthGuard } from "../auth/guards/admin-auth.guard";
 import { PartnerGuard } from "../auth/guards/partner.guard";
 import { WholesalePriceAccess } from "../decorators/wholesale-price.decorator";
+import { OptionalParseIntPipe } from "../helpers/optional-parse-int.pipe";
 
 @Controller('product')
 export class ProductController {
@@ -85,17 +86,17 @@ export class ProductController {
   @Get('/catalog')
   getProducts(
     @WholesalePriceAccess() wholesalePriceAccess: boolean,
-    @Query('id') id: number = -1,
+    @Query('id', new OptionalParseIntPipe()) id: number = -1,
     @Query('finder') finder: string = "",
     @Query('article') article: string = "",
-    @Query('limit') limit: number = 1,
-    @Query('page') page: number = 1,
+    @Query('limit', new OptionalParseIntPipe()) limit: number = 1,
+    @Query('page', new OptionalParseIntPipe()) page: number = 1,
     @Query('tagIds', new ParseArrayPipe({ items: Number, separator: ',', optional: true })) tagIds: number[] = [],
-    @Query('productGroupId') productGroupId: number = -1,
-    @Query('minPrice') minPrice: number = -1,
-    @Query('maxPrice') maxPrice: number = -1,
-    @Query('wMinPrice') wMinPrice: number = -1,
-    @Query('wMaxPrice') wMaxPrice: number = -1,
+    @Query('productGroupId', new OptionalParseIntPipe()) productGroupId: number = -1,
+    @Query('minPrice', new OptionalParseIntPipe()) minPrice: number = -1,
+    @Query('maxPrice', new OptionalParseIntPipe()) maxPrice: number = -1,
+    @Query('wMinPrice', new OptionalParseIntPipe()) wMinPrice: number = -1,
+    @Query('wMaxPrice', new OptionalParseIntPipe()) wMaxPrice: number = -1,
   ) {
     return this.productService.getProducts(
       {id, finder, article, limit, page, tagIds, productGroupId, maxPrice, minPrice, wMinPrice, wMaxPrice},
@@ -106,17 +107,17 @@ export class ProductController {
   @UseGuards(AdminAuthGuard)
   @Get('/manager-catalog')
   getProductsForManager(
-    @Query('id') id: number = -1,
+    @Query('id', new OptionalParseIntPipe()) id: number = -1,
     @Query('finder') finder: string = "",
     @Query('article') article: string = "",
-    @Query('limit') limit: number = 1,
-    @Query('page') page: number = 1,
+    @Query('limit', new OptionalParseIntPipe()) limit: number = 1,
+    @Query('page', new OptionalParseIntPipe()) page: number = 1,
     @Query('tagIds', new ParseArrayPipe({ items: Number, separator: ',', optional: true })) tagIds: number[] = [],
-    @Query('productGroupId') productGroupId: number = -1,
-    @Query('minPrice') minPrice: number = -1,
-    @Query('maxPrice') maxPrice: number = -1,
-    @Query('wMinPrice') wMinPrice: number = -1,
-    @Query('wMaxPrice') wMaxPrice: number = -1,
+    @Query('productGroupId', new OptionalParseIntPipe()) productGroupId: number = -1,
+    @Query('minPrice', new OptionalParseIntPipe()) minPrice: number = -1,
+    @Query('maxPrice', new OptionalParseIntPipe()) maxPrice: number = -1,
+    @Query('wMinPrice', new OptionalParseIntPipe()) wMinPrice: number = -1,
+    @Query('wMaxPrice', new OptionalParseIntPipe()) wMaxPrice: number = -1,
   ) {
     return this.productService.getProducts(
       {id, finder, article, limit, page, tagIds, productGroupId, maxPrice, minPrice, wMinPrice, wMaxPrice},

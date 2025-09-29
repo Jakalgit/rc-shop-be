@@ -22,7 +22,6 @@ import { UserRequestModule } from './user-request/user-request.module';
 import { UserRequest } from "./user-request/models/user-request.model";
 import { ProductGroupModule } from './product-group/product-group.module';
 import { ProductGroup } from "./product-group/models/product-group.model";
-import { HomeCategoryModule } from './home-category/home-category.module';
 import { ProfileModule } from './profile/profile.module';
 import { PromotionSliderModule } from './promotion-slider/promotion-slider.module';
 import { SliderItem } from "./promotion-slider/models/slider-item";
@@ -35,6 +34,10 @@ import { OrderItem } from "./order/models/order_item.model";
 import { OrderAction } from "./order/models/order_action.model";
 import { PageBlockModule } from './page-block/page-block.module';
 import { PageBlock } from "./page-block/models/page-block.model";
+import { CategoryBlockModule } from './category-block/category-block.module';
+import { CategoryBlock } from "./category-block/models/category-block.model";
+import { CategoryLink } from "./category-block/models/category-link.model";
+import { CategorySubBlock } from "./category-block/models/category-subblock.model";
 
 @Module({
   imports: [
@@ -53,7 +56,7 @@ import { PageBlock } from "./page-block/models/page-block.model";
         username: configService.get<string>('DB_USER'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        models: [Contact, Product, Tag, TagProduct, Image, Preview, Detail, PageBlock,
+        models: [Contact, Product, Tag, TagProduct, Image, Preview, Detail, PageBlock, CategoryBlock, CategoryLink, CategorySubBlock,
           Group, RepairService, UserRequest, ProductGroup, SliderItem, Profile, Order, OrderItem, OrderAction],
         autoLoadModels: true,
       })
@@ -66,13 +69,13 @@ import { PageBlock } from "./page-block/models/page-block.model";
     RepairServiceModule,
     UserRequestModule,
     ProductGroupModule,
-    HomeCategoryModule,
     ProfileModule,
     PromotionSliderModule,
     MailerModule,
     RedisModule,
     OrderModule,
-    PageBlockModule
+    PageBlockModule,
+    CategoryBlockModule
   ],
 })
 export class AppModule {}

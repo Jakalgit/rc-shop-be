@@ -9,7 +9,9 @@ async function bootstrap() {
     const isProd = process.env.NODE_ENV === 'production';
 
     app.setGlobalPrefix('api');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true })
+    );
 
     app.enableCors({
       origin: isProd ? ['https://manager.work-rc.ru', 'https://work-rc.ru'] : '*',
