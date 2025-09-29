@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { SubBlockDto } from "./dto/update-category-block.dto";
 import { Op, Transaction } from "sequelize";
 import { InjectModel } from "@nestjs/sequelize";
@@ -18,6 +18,7 @@ export class CategorySubBlockService {
 
   async updateSubBlocks(blocks: SubBlockDto[], files: Express.Multer.File[], transaction: Transaction) {
     // Проверяем данные
+    this.checkDtoBlocksData(blocks, files);
 
     // Удаляем все блоки, которых нет в dto, но есть в бд
     await this.deleteSubBlocks(blocks, transaction);
@@ -31,8 +32,24 @@ export class CategorySubBlockService {
     await this.createNewSubBlock(blocks, files, transaction);
   }
 
-  async checkDtoBlocksData() {
+  private checkDtoBlocksData(blocks: SubBlockDto[], files: Express.Multer.File[]) {
+    if (blocks.find(el => el.name.length === 0)) {
+      throw new BadRequestException("Ошибка: один или несколько под-блоков имеют пустое название");
+    }
 
+    if (blocks.find(el => typeof el.preview.imageId === 'undefined' && typeof el.preview.filename === 'undefined')) {
+      throw new BadRequestException("Ошибка: preview под-блока должно указывать на файл, сейчас отсутствует filename и imageId");
+    }
+
+    for (const item of blocks) {
+      if (typeof item.preview.imageId === 'undefined' && !files.find(el => el.originalname === item.preview.filename)) {
+        throw new BadRequestException(
+          "Ошибка: превью как минимум 1 из блоков указывает на файл, который отсутствует в наборе передаваемых файлов, пожалуйста, заполните все изображения",
+        );
+      }
+    }
+
+    // areIndexesUnique(blocks, "Ошибка: индексы блоков должны быть уникальны и идти по порядку от 0");
   }
 
   private async deleteSubBlocks(blocks: SubBlockDto[], transaction: Transaction) {

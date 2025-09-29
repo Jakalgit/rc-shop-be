@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { LinkBlockDto } from "./dto/update-category-block.dto";
 import { Op, Transaction } from "sequelize";
 import { CategoryLink } from "./models/category-link.model";
@@ -14,6 +14,7 @@ export class CategoryBlockLinkService {
 
   async updateLinks(links: LinkBlockDto[], transaction: Transaction) {
     // Проверяем данные
+    this.checkDtoBlockLinksData(links);
 
     // Удаляем данные которых нет в dto
     await this.deleteLinks(links, transaction);
@@ -27,8 +28,12 @@ export class CategoryBlockLinkService {
     await this.createNewLinks(links, transaction);
   }
 
-  private async checkDtoBlockLinksData() {
+  private checkDtoBlockLinksData(links: LinkBlockDto[]) {
+    if (links.find(el => el.linkText.length === 0)) {
+      throw new BadRequestException("Ошибка: у каждой ссылки должен быть непустой текст");
+    }
 
+    // areIndexesUnique(links, "Ошибка: индексы ссылок должны быть уникальны и идти по порядку от 0");
   }
 
   private async deleteLinks(links: LinkBlockDto[], transaction: Transaction) {

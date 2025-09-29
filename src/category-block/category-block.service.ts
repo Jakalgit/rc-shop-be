@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectModel } from '@nestjs/sequelize';
 import { CategoryBlock } from './models/category-block.model';
 import { CategoryLink } from './models/category-link.model';
@@ -16,6 +16,7 @@ import { ImageService } from '../image/image.service';
 import { CategoryBlockSharedService } from './category-block-shared.service';
 import { CategoryBlockLinkService } from './category-block-link.service';
 import ISOLATION_LEVELS = Transaction.ISOLATION_LEVELS;
+import { areIndexesUnique } from "../helpers/areIndexesUnique.";
 
 @Injectable()
 export class CategoryBlockService {
@@ -70,6 +71,7 @@ export class CategoryBlockService {
     transaction: Transaction,
   ) {
     // Проверяем данные
+    this.checkDtoBlocksData(dto.blocks, files);
 
     // Удаляем блоки которых нет в dto
     await this.deleteBlocks(dto.blocks, transaction);
@@ -87,7 +89,25 @@ export class CategoryBlockService {
     );
   }
 
-  private async checkDtoBlocksData() {}
+  private checkDtoBlocksData(dto: CategoryBlockDto[], files: Express.Multer.File[]) {
+    if (dto.find(el => el.blockText.length === 0)) {
+      throw new BadRequestException("Ошибка: один или несколько блоков имеют пустое название");
+    }
+
+    if (dto.find(el => typeof el.preview.imageId === 'undefined' && typeof el.preview.filename === 'undefined')) {
+      throw new BadRequestException("Ошибка: preview блока должно указывать на файл, сейчас отсутствует filename и imageId");
+    }
+
+    for (const item of dto) {
+      if (typeof item.preview.imageId === 'undefined' && !files.find(el => el.originalname === item.preview.filename)) {
+        throw new BadRequestException(
+          'Превью как минимум 1 из блоков указывает на файл, который отсутствует в наборе передаваемых файлов',
+        );
+      }
+    }
+
+    areIndexesUnique(dto, "Ошибка: индексы блоков должны быть уникальны и идти по порядку от 0");
+  }
 
   private async deleteBlocks(
     blocks: CategoryBlockDto[],

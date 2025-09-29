@@ -401,17 +401,6 @@ export class ProductHelpersService {
     });
   }
 
-  areIndexesUnique(arr: { index: number; [key: string]: any }[]) {
-    const seen = new Set<number>();
-
-    for (const item of arr) {
-      if (seen.has(item.index)) {
-        throw new BadRequestException('Индексы в массиве должны быть уникальны');
-      }
-      seen.add(item.index);
-    }
-  }
-
   async decrementCount(
     fields: AllowReadonlyArray<keyof Product>,
     options: IncrementDecrementOptionsWithBy<Product>,

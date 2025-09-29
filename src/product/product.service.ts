@@ -13,6 +13,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { applyRangeFilter } from '../helpers/applyRangeFilter';
 import { ProductHelpersService } from './product-helpers.service';
 import { ProductUpdatesService } from './product-updates.service';
+import { areIndexesUnique } from "../helpers/areIndexesUnique.";
 
 @Injectable()
 export class ProductService {
@@ -76,7 +77,7 @@ export class ProductService {
     await this.productHelpersService.checkSomeDtoInformation(dto);
 
     // Проверяем индексы массива previews
-    this.productHelpersService.areIndexesUnique(dto.previews);
+    areIndexesUnique(dto.previews);
 
     const transaction = await this.sequelize.transaction();
 
@@ -198,7 +199,7 @@ export class ProductService {
     await this.productHelpersService.checkSomeDtoInformation(dto);
 
     // Проверяем индексы массива previews
-    this.productHelpersService.areIndexesUnique(dto.previews);
+    areIndexesUnique(dto.previews);
 
     const descriptions = this.productHelpersService.reformatDetails(
       dto.details,
