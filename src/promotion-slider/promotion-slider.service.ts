@@ -61,6 +61,9 @@ export class PromotionSliderService {
             href: el.href,
             imageId: img.id, // ID изображения из базы данных
             index: el.index,
+            title: el.title,
+            text: el.text,
+            buttonText: el.buttonText,
           };
         });
 
@@ -160,6 +163,9 @@ export class PromotionSliderService {
         filename: image.filename,
         href: slide.href,
         imageId: slide.imageId,
+        text: slide.text,
+        buttonText: slide.buttonText,
+        title: slide.title,
       }
     })
   }

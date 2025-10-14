@@ -3,6 +3,9 @@ import { Image } from "../../image/models/image.model";
 
 export interface SliderItemCreationAttrs {
   href: string;
+  title: string;
+  text: string;
+  buttonText: string;
   imageId: number;
   index: number;
 }
@@ -12,6 +15,15 @@ export class SliderItem extends Model<SliderItem, SliderItemCreationAttrs> {
 
   @Column({ type: DataType.TEXT, allowNull: false })
   href: string;
+
+  @Column({ type: DataType.STRING, allowNull: false })
+  title: string;
+
+  @Column({ type: DataType.STRING, allowNull: false })
+  text: string;
+
+  @Column({ type: DataType.STRING, allowNull: false })
+  buttonText: string;
 
   @Column({ type: DataType.INTEGER, allowNull: false })
   index: number;

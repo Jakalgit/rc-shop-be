@@ -16,13 +16,8 @@ export class PromotionSliderController {
   @UseInterceptors(FilesInterceptor('files[]', 30))
   update(
     @UploadedFiles() files: Express.Multer.File[],
-    @Body() body: any
+    @Body() dto: UpdateSliderDto,
   ) {
-
-    const dto: UpdateSliderDto = {
-      items: JSON.parse(body.items),
-    }
-
     return this.promotionSliderService.update(dto, files);
   }
 
