@@ -146,7 +146,7 @@ export class ProductHelpersService {
       isPartner?: boolean;
     }
   ) {
-    const { price, tagIds, ...restOptions } = options as any;
+    const { price, tagIds, order, ...restOptions } = options as any;
 
     let productIds: number[] | undefined = undefined;
 
@@ -174,9 +174,7 @@ export class ProductHelpersService {
       limit: limit,
       offset: (page - 1) * limit,
       raw: true,
-      order: [
-        ['createdAt', 'DESC']
-      ]
+      order: order || [['createdAt', 'DESC']],
     });
 
     // Общее количество записей

@@ -1,3 +1,4 @@
+import { ProductSortEnum } from "../../enums/product-sort.enum";
 
 export class GetProductDto {
 
@@ -22,4 +23,8 @@ export class GetProductDto {
   wMinPrice: number;
 
   wMaxPrice: number;
+
+  showUnavailable: boolean;
+
+  sortType: ProductSortEnum;
 }

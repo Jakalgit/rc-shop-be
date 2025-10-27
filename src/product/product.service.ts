@@ -13,7 +13,8 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { applyRangeFilter } from '../helpers/applyRangeFilter';
 import { ProductHelpersService } from './product-helpers.service';
 import { ProductUpdatesService } from './product-updates.service';
-import { areIndexesUnique } from "../helpers/areIndexesUnique.";
+import { areIndexesUnique } from '../helpers/areIndexesUnique.';
+import { ProductSortEnum } from '../enums/product-sort.enum';
 
 @Injectable()
 export class ProductService {
@@ -291,6 +292,11 @@ export class ProductService {
       options['tagIds'] = dto.tagIds;
     }
 
+    if (!dto.showUnavailable) {
+      options['availability'] = true;
+      options['count'] = { [Op.gt]: 0 }
+    }
+
     // Если есть артикул, то ищем строго по нему
     if (dto.article.length > 0) {
       options['article'] = dto.article;
@@ -327,6 +333,12 @@ export class ProductService {
       if (wholesalePriceOptions[Op.and]) {
         options['wholesalePrice'] = wholesalePriceOptions;
       }
+    }
+
+    if (dto.sortType === ProductSortEnum.PRICE_ASCENDING) {
+      options['order'] = [['price', 'ASC']]
+    } else if (dto.sortType === ProductSortEnum.PRICE_DESCENDING) {
+      options['order'] = [['price', 'DESC']]
     }
 
     if (priceOptions[Op.and]) {
