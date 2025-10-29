@@ -161,9 +161,9 @@ export class ProductHelpersService {
         ...(productIds !== undefined &&
           (productIds.length > 0
             ? { id: { [Op.or]: productIds } }
-            : { id: null })),
+            : {})),
         ...(Object.keys(restOptions).length !== 0
-          ? { [Op.or]: restOptions }
+          ? restOptions
           : {}),
         ...(price ? { price } : {}),
         visibility: true,

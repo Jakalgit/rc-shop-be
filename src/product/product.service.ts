@@ -309,8 +309,10 @@ export class ProductService {
 
     // Если есть поисковой запрос, то ищем любое совпадение в артикуле и id
     if (dto.finder.length > 0) {
-      options['name'] = { [Op.iLike]: `%${dto.finder}%` };
-      options['article'] = { [Op.iLike]: `%${dto.finder}%` };
+      options[Op.or] = {
+        name: { [Op.iLike]: `%${dto.finder}%` },
+        article: { [Op.iLike]: `%${dto.finder}%` },
+      }
     }
 
     // Добавляем границы для обычной цены
