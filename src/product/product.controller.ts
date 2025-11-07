@@ -149,7 +149,7 @@ export class ProductController {
     @Query('wMaxPrice', new OptionalParseIntPipe()) wMaxPrice: number = -1,
     @Query('sort', new OptionalParseIntPipe())
     sortType: ProductSortEnum = ProductSortEnum.DEFAULT,
-    @Query('unavailable', new OptionalParseIntPipe())showUnavailable: boolean = false,
+    @Query('unavailable', new OptionalParseIntPipe()) showUnavailable: number = 0,
   ) {
     return this.productService.getProducts(
       {
@@ -165,7 +165,7 @@ export class ProductController {
         wMinPrice,
         wMaxPrice,
         sortType,
-        showUnavailable
+        showUnavailable: Boolean(showUnavailable),
       },
       true,
     );
