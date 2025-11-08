@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { UpdateProductDto } from "./dto/update-product.dto";
+import { UpdateProductDto } from "../dto/update-product.dto";
 import { Op, Transaction } from "sequelize";
 import { ProductHelpersService } from "./product-helpers.service";
 import { InjectModel } from "@nestjs/sequelize";
-import { Detail } from "./models/detail.model";
-import { Preview } from "./models/preview.model";
-import { ImageService } from "../image/image.service";
-import { TagService } from "../tags/tag.service";
+import { Detail } from "../models/detail.model";
+import { Preview } from "../models/preview.model";
+import { ImageService } from "../../image/image.service";
+import { TagService } from "../../tags/tag.service";
 
 @Injectable()
 export class ProductUpdatesService {

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ProductController } from './product.controller';
-import { ProductService } from './product.service';
+import { ProductService } from './services/product.service';
 import { SequelizeModule } from "@nestjs/sequelize";
 import { Detail } from "./models/detail.model";
 import { Preview } from "./models/preview.model";
@@ -10,8 +10,9 @@ import { TagModule } from "../tags/tag.module";
 import { ImageModule } from "../image/image.module";
 import { AuthModule } from "../auth/auth.module";
 import { Profile } from "../profile/models/profile.model";
-import { ProductHelpersService } from "./product-helpers.service";
-import { ProductUpdatesService } from "./product-updates.service";
+import { ProductHelpersService } from "./services/product-helpers.service";
+import { ProductUpdatesService } from "./services/product-updates.service";
+import { ProductGettersService } from "./services/product.getters.service";
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { ProductUpdatesService } from "./product-updates.service";
     AuthModule
   ],
   controllers: [ProductController],
-  providers: [ProductService, ProductHelpersService, ProductUpdatesService],
+  providers: [ProductService, ProductHelpersService, ProductUpdatesService, ProductGettersService],
   exports: [ProductService, ProductHelpersService]
 })
 export class ProductModule {}

@@ -9,7 +9,10 @@ export class UpdateContactDto {
   address: string;
 
   @IsString()
-  phone: string;
+  phone1: string;
+
+  @IsString()
+  phone2: string;
 
   @IsString()
   tgIdentifier: string;

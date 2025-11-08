@@ -3,7 +3,8 @@ import { Column, DataType, Model, Table } from "sequelize-typescript";
 export interface ContactCreationAttrs {
   email: string;
   address: string;
-  phone: string;
+  phone1?: string;
+  phone2?: string;
   tgIdentifier: string;
   whatsappIdentifier: string;
   workTime: string;
@@ -19,7 +20,10 @@ export class Contact extends Model<Contact, ContactCreationAttrs> {
   address: string;
 
   @Column({ type: DataType.STRING })
-  phone: string;
+  phone1: string;
+
+  @Column({ type: DataType.STRING })
+  phone2: string;
 
   @Column({ type: DataType.STRING })
   tgIdentifier: string;

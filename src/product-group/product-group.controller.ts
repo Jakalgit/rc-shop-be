@@ -1,4 +1,4 @@
-import { Controller, Delete, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { ProductGroupService } from "./product-group.service";
 import { CreateProductGroupDto } from "./dto/create-product-group.dto";
 import { AdminAuthGuard } from "../auth/guards/admin-auth.guard";
@@ -13,18 +13,34 @@ export class ProductGroupController {
 
   @UseGuards(AdminAuthGuard)
   @Post()
-  create(dto: CreateProductGroupDto) {
+  create(@Body() dto: CreateProductGroupDto) {
     return this.productGroupService.create(dto);
   }
 
   @UseGuards(AdminAuthGuard)
-  @Put()
-  update(dto: UpdateProductGroupDto) {
+  @Put('/update')
+  update(@Body() dto: UpdateProductGroupDto) {
     return this.productGroupService.update(dto);
   }
 
   @UseGuards(AdminAuthGuard)
-  @Delete('/:id')
+  @Get('/list')
+  getProductGroups(
+    @Query('page') page: number = 1,
+    @Query('pageCount') pageCount: number = 1,
+    @Query('finder') finder: string,
+  ) {
+    return this.productGroupService.getProductGroups({ page, pageCount, finder })
+  }
+
+  @UseGuards(AdminAuthGuard)
+  @Get('/single/:groupId')
+  getSingleGroup(@Param('groupId') groupId: number) {
+    return this.productGroupService.getSingleProductGroup(groupId);
+  }
+
+  @UseGuards(AdminAuthGuard)
+  @Delete('/remove/:id')
   delete(@Param('id') id: number) {
     return this.productGroupService.delete(id);
   }

@@ -1,20 +1,20 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Product } from './models/product.model';
+import { Product } from '../models/product.model';
 import { InjectModel } from '@nestjs/sequelize';
-import { Preview } from './models/preview.model';
-import { Detail } from './models/detail.model';
-import { CreateProductDto } from './dto/create-product.dto';
+import { Preview } from '../models/preview.model';
+import { Detail } from '../models/detail.model';
+import { CreateProductDto } from '../dto/create-product.dto';
 import { Op } from 'sequelize';
-import { DetailEnum } from '../enums/detail.enum';
+import { DetailEnum } from '../../enums/detail.enum';
 import { Sequelize } from 'sequelize-typescript';
-import { TagService } from '../tags/tag.service';
-import { GetProductDto } from './dto/get-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { applyRangeFilter } from '../helpers/applyRangeFilter';
+import { TagService } from '../../tags/tag.service';
+import { GetProductDto } from '../dto/get-product.dto';
+import { UpdateProductDto } from '../dto/update-product.dto';
+import { applyRangeFilter } from '../../helpers/applyRangeFilter';
 import { ProductHelpersService } from './product-helpers.service';
 import { ProductUpdatesService } from './product-updates.service';
-import { areIndexesUnique } from '../helpers/areIndexesUnique.';
-import { ProductSortEnum } from '../enums/product-sort.enum';
+import { areIndexesUnique } from '../../helpers/areIndexesUnique.';
+import { ProductSortEnum } from '../../enums/product-sort.enum';
 
 @Injectable()
 export class ProductService {
@@ -281,6 +281,7 @@ export class ProductService {
     }
   }
 
+  // TODO: Перенести в сервис геттеров
   // Получение информации о товарах
   async getProducts(dto: GetProductDto, wholesalePriceAccess: boolean) {
     let options = {};
@@ -364,6 +365,7 @@ export class ProductService {
     };
   }
 
+  // TODO: Перенести в сервис геттеров
   async getProductForBasket(articles: string[], wholesalePriceAccess: boolean) {
     if (articles.length === 0) {
       return [];
@@ -406,15 +408,5 @@ export class ProductService {
     }
 
     return productsData.records;
-  }
-
-  async getProductsSitemap() {
-    return await this.productRepository.findAll({
-      where: { visibility: true },
-      raw: true,
-      attributes: {
-        include: ['article', 'updatedAt'],
-      },
-    });
   }
 }

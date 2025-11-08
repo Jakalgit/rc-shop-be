@@ -1,5 +1,5 @@
 import { DetailEnum } from "../../enums/detail.enum";
-import { IsNotEmpty, Length, Min } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, Length, Min } from "class-validator";
 
 export class BaseProductDto {
 
@@ -35,6 +35,14 @@ export class BaseProductDto {
   width?: number;
   height?: number;
   length?: number;
+
+  tuningUrl?: string;
+  partsUrl?: string;
+
+  @IsOptional()
+  @IsNumber({}, {message: 'Attribute productGroupId must be a number'})
+  productGroupId?: number;
+
 
   @IsNotEmpty({message: "Attribute previews is required"})
   previews: {imageId?: number, filename?: string, index: number}[];

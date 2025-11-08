@@ -1,17 +1,17 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { AllowReadonlyArray, IncrementDecrementOptionsWithBy, Op, Transaction, WhereOptions } from "sequelize";
 import { extname } from "path";
-import { ImageService } from "../image/image.service";
-import { BaseProductDto } from "./dto/create-product.dto";
+import { ImageService } from "../../image/image.service";
+import { BaseProductDto } from "../dto/create-product.dto";
 import { validate } from "class-validator";
 import { ClassConstructor, plainToInstance } from "class-transformer";
-import { Product, ProductCreationAttrs } from "./models/product.model";
-import { DetailEnum } from "../enums/detail.enum";
-import { TagService } from "../tags/tag.service";
+import { Product, ProductCreationAttrs } from "../models/product.model";
+import { DetailEnum } from "../../enums/detail.enum";
+import { TagService } from "../../tags/tag.service";
 import { InjectModel } from "@nestjs/sequelize";
-import { Detail } from "./models/detail.model";
-import { Image } from "../image/models/image.model";
-import { Preview } from "./models/preview.model";
+import { Detail } from "../models/detail.model";
+import { Image } from "../../image/models/image.model";
+import { Preview } from "../models/preview.model";
 
 @Injectable()
 export class ProductHelpersService {
@@ -313,6 +313,9 @@ export class ProductHelpersService {
       'article',
       'count',
       'wholesalePrice',
+      'partsUrl',
+      'tuningUrl',
+      'productGroupId',
     ];
 
     // Вытаскиваем атрибуты для создания продукта

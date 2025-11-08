@@ -30,6 +30,9 @@ export interface ProductCreationAttrs {
   width?: number;
   height?: number;
   length?: number;
+  partsUrl?: string;
+  tuningUrl?: string;
+  productGroupId?: number;
 }
 
 @Table({ tableName: "products" })
@@ -74,6 +77,14 @@ export class Product extends Model<Product, ProductCreationAttrs> {
   @Column({ type: DataType.FLOAT })
   promotionPercentage: number;
 
+  // Ссылка на страницу с запчастями
+  @Column({ type: DataType.TEXT })
+  partsUrl: string;
+
+  // Ссылка на страницу с тюнингом
+  @Column({ type: DataType.TEXT })
+  tuningUrl: string;
+
   // Вес коробки
   @Column({ type: DataType.FLOAT })
   weight: number;
@@ -90,7 +101,7 @@ export class Product extends Model<Product, ProductCreationAttrs> {
   length: number;
 
   @ForeignKey(() => ProductGroup)
-  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: true, onDelete: "SET NULL" })
+  @Column({ type: DataType.INTEGER.UNSIGNED, onDelete: "SET NULL" })
   productGroupId: number;
 
   @HasMany(() => Detail)

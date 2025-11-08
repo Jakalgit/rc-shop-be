@@ -11,7 +11,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ProductService } from './product.service';
+import { ProductService } from './services/product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -20,10 +20,14 @@ import { PartnerGuard } from '../auth/guards/partner.guard';
 import { WholesalePriceAccess } from '../decorators/wholesale-price.decorator';
 import { OptionalParseIntPipe } from '../helpers/optional-parse-int.pipe';
 import { ProductSortEnum } from '../enums/product-sort.enum';
+import { ProductGettersService } from "./services/product.getters.service";
 
 @Controller('product')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+    private readonly productGettersService: ProductGettersService
+  ) {}
 
   @UseGuards(AdminAuthGuard)
   @Post()
@@ -47,6 +51,9 @@ export class ProductController {
       width: body.width ? Number(body.width) : null,
       height: body.height ? Number(body.height) : null,
       length: body.length ? Number(body.length) : null,
+      tuningUrl: body.tuningUrl,
+      partsUrl: body.partsUrl,
+      productGroupId: body.productGroupId ? Number(body.productGroupId) : null,
     };
 
     return this.productService.createProduct(dto, files);
@@ -79,6 +86,9 @@ export class ProductController {
       width: body.width ? Number(body.width) : null,
       height: body.height ? Number(body.height) : null,
       length: body.length ? Number(body.length) : null,
+      tuningUrl: body.tuningUrl,
+      partsUrl: body.partsUrl,
+      productGroupId: body.productGroupId ? Number(body.productGroupId) : null,
     };
 
     return this.productService.updateProduct(dto, files);
@@ -184,8 +194,13 @@ export class ProductController {
     return this.productService.getProductForBasket(cart, wholesalePriceAccess);
   }
 
+  @Get('/items-product-group/:productId')
+  getItemsInSameProductGroup(@Param('productId') productId: number) {
+    return this.productGettersService.getProductsForProductGroup(productId);
+  }
+
   @Get('/sitemap')
   getProductsSitemap() {
-    return this.productService.getProductsSitemap();
+    return this.productGettersService.getProductsSitemap();
   }
 }
