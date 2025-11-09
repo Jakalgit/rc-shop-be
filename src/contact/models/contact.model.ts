@@ -3,8 +3,8 @@ import { Column, DataType, Model, Table } from "sequelize-typescript";
 export interface ContactCreationAttrs {
   email: string;
   address: string;
-  phone1?: string;
-  phone2?: string;
+  phone1: string;
+  phone2: string;
   tgIdentifier: string;
   whatsappIdentifier: string;
   workTime: string;

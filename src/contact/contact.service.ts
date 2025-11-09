@@ -24,6 +24,8 @@ export class ContactService implements OnModuleInit{
       await this.contactRepository.create({
         email: "",
         address: "",
+        phone1: '',
+        phone2: '',
         tgIdentifier: "",
         whatsappIdentifier: "",
         workTime: ""
