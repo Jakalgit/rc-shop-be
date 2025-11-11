@@ -139,11 +139,13 @@ export class ProductHelpersService {
       limit,
       page,
       isPartner,
+      visibility
     }: {
       options?: WhereOptions<Product>;
       limit: number;
       page: number;
       isPartner?: boolean;
+      visibility?: boolean;
     }
   ) {
     const { price, tagIds, order, ...restOptions } = options as any;
@@ -155,19 +157,22 @@ export class ProductHelpersService {
       productIds = await this.tagService.getProductIdsForTagIds(tagIds);
     }
 
+    const where = {
+      ...(productIds !== undefined &&
+        (productIds.length > 0
+          ? { id: { [Op.or]: productIds } }
+          : {})),
+      ...(restOptions && (Object.keys(restOptions).length > 0 || Object.getOwnPropertySymbols(restOptions).length > 0)
+          ? restOptions
+          : {}
+      ),
+      ...(price ? { price } : {}),
+      visibility,
+    }
+
     // Находим товар
     const products = await this.productRepository.findAndCountAll({
-      where: {
-        ...(productIds !== undefined &&
-          (productIds.length > 0
-            ? { id: { [Op.or]: productIds } }
-            : {})),
-        ...(Object.keys(restOptions).length !== 0
-          ? restOptions
-          : {}),
-        ...(price ? { price } : {}),
-        visibility: true,
-      },
+      where,
       attributes: {
         exclude: isPartner ? [] : ['wholesalePrice'],
       },

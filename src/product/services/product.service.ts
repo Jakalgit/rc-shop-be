@@ -283,7 +283,7 @@ export class ProductService {
 
   // TODO: Перенести в сервис геттеров
   // Получение информации о товарах
-  async getProducts(dto: GetProductDto, wholesalePriceAccess: boolean) {
+  async getProducts(dto: GetProductDto, wholesalePriceAccess: boolean, isAdmin?: boolean) {
     let options = {};
     let priceOptions = {};
     let wholesalePriceOptions = {};
@@ -357,6 +357,7 @@ export class ProductService {
       limit: dto.limit,
       page: dto.page,
       isPartner,
+      visibility: isAdmin,
     });
 
     return {

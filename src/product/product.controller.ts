@@ -178,6 +178,7 @@ export class ProductController {
         showUnavailable: Boolean(showUnavailable),
       },
       true,
+      true
     );
   }
 
