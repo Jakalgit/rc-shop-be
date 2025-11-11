@@ -139,13 +139,13 @@ export class ProductHelpersService {
       limit,
       page,
       isPartner,
-      visibility
+      isAdmin
     }: {
       options?: WhereOptions<Product>;
       limit: number;
       page: number;
       isPartner?: boolean;
-      visibility?: boolean;
+      isAdmin?: boolean;
     }
   ) {
     const { price, tagIds, order, ...restOptions } = options as any;
@@ -167,7 +167,7 @@ export class ProductHelpersService {
           : {}
       ),
       ...(price ? { price } : {}),
-      visibility,
+      ...(!isAdmin && { visibility: true }),
     }
 
     // Находим товар

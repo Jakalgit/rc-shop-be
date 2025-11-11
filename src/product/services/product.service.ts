@@ -357,7 +357,7 @@ export class ProductService {
       limit: dto.limit,
       page: dto.page,
       isPartner,
-      visibility: isAdmin,
+      isAdmin,
     });
 
     return {
