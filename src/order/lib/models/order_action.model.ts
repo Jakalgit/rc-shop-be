@@ -1,6 +1,6 @@
 import { BelongsTo, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { OrderActionEnum } from "../../enums/order/order-action.enum";
-import { OrderActionActorEnum } from "../../enums/order/order-action-actor.enum";
+import { OrderActionEnum } from "../../../enums/order/order-action.enum";
+import { OrderActionActorEnum } from "../../../enums/order/order-action-actor.enum";
 import { Order } from "./order.model";
 
 export interface OrderActionCreationAttrs {

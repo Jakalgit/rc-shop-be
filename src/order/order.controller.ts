@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
-import { CreateOrderDto } from "./dto/create-order.dto";
+import { CreateOrderDto } from "./lib/dto/create-order.dto";
 import { ProfileId } from "../decorators/profile-id.decorator";
 import { OrderService } from "./order.service";
 import { AdminAuthGuard } from "../auth/guards/admin-auth.guard";
 import { ProfileAuthGuard } from "../auth/guards/profile-auth.guard";
 import { ProfileDetectGuard } from "../auth/guards/profile-detect.guard";
-import { UpdateOrderDto } from "./dto/update-order.dto";
+import { UpdateOrderDto } from "./lib/dto/update-order.dto";
 
 @Controller('order')
 export class OrderController {

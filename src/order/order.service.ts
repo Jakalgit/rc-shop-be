@@ -4,10 +4,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Order } from './models/order.model';
-import { OrderItem, OrderItemCreationAttrs } from './models/order_item.model';
-import { OrderAction } from './models/order_action.model';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { Order } from './lib/models/order.model';
+import {
+  OrderItem,
+  OrderItemCreationAttrs,
+} from './lib/models/order_item.model';
+import { OrderAction } from './lib/models/order_action.model';
+import { CreateOrderDto } from './lib/dto/create-order.dto';
 import { ProfileGettersService } from '../profile/services/profile-getters.service';
 import { ProductService } from '../product/services/product.service';
 import { ProfileEnum } from '../enums/profile.enum';
@@ -18,12 +21,13 @@ import { OrderActionActorEnum } from '../enums/order/order-action-actor.enum';
 import * as generatePassword from 'generate-password';
 import { Op, Transaction } from 'sequelize';
 import { ProductHelpersService } from '../product/services/product-helpers.service';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { UpdateOrderDto } from './lib/dto/update-order.dto';
 import { OrderHelpersService } from './order-helpers.service';
 import { OrderStatusEnum } from '../enums/order/order-status.enum';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '../mailer/mailer.service';
 import { PaymentMethodEnum } from '../enums/order/payment-method.enum';
+import { CdekDeliveryEnum } from './lib/types';
 import ISOLATION_LEVELS = Transaction.ISOLATION_LEVELS;
 
 @Injectable()
@@ -70,6 +74,8 @@ export class OrderService {
       throw new NotFoundException('Пользователя с таким id не существует');
     }
 
+    // Переменная под стоимость доставки
+    let deliveryPrice = 0;
     // Получаем артикли товаров из запроса
     const articles = dto.items.map((el) => el.article);
     // Получаем продукты из базы данных
@@ -94,12 +100,48 @@ export class OrderService {
     }
 
     if (
-      dto.deliveryMethod !== DeliveryMethodEnum.SELF_PICKUP &&
+      dto.deliveryMethod === DeliveryMethodEnum.DELIVERY_MOSCOW &&
       typeof dto.address !== 'string'
     ) {
       throw new BadRequestException(
         'Укажите адрес доставки или выберите тип доставки: самовывоз',
       );
+    }
+
+    if (
+      dto.deliveryMethod === DeliveryMethodEnum.DELIVERY_COUNTRY &&
+      typeof dto.cdekMetadata === 'undefined'
+    ) {
+      throw new BadRequestException('Укажите данные доставки СДЕК');
+    } else if (dto.deliveryMethod === DeliveryMethodEnum.DELIVERY_COUNTRY) {
+      let to_location = {};
+      if (dto.cdekMetadata.delivery === CdekDeliveryEnum.OFFICE) {
+        to_location = {
+          code: dto.cdekMetadata.address.city_code
+        }
+      } else if (dto.cdekMetadata.delivery === CdekDeliveryEnum.DOOR) {
+        to_location = {
+          address: dto.cdekMetadata.address.formatted,
+          country_code: dto.cdekMetadata.address.country_code,
+          postal_code: Number(dto.cdekMetadata.address.postal_code),
+        }
+      } else {
+        throw new BadRequestException('Неверный метод доставки в СДЕК');
+      }
+
+      const tariff = await this.orderHelpersService.calculateCdekDelivery(
+        {
+          to_location,
+          packages: products.map(el => ({
+            width: el.width || 100,
+            length: el.length || 100,
+            height: el.height || 100,
+            weight: el.weight || 1000,
+          }))
+        },
+        dto.cdekMetadata.rate.tariff_code
+      );
+      deliveryPrice = tariff.delivery_sum;
     }
 
     // Считаем цену товаров
@@ -130,6 +172,7 @@ export class OrderService {
           guestPhone: dto.phone,
           deliveryMethod: dto.deliveryMethod,
           paymentMethod: dto.paymentMethod,
+          deliveryPrice,
           subtotal,
           orderNumber,
           comment: dto.comment,
@@ -137,6 +180,7 @@ export class OrderService {
             ? { address: dto.address }
             : {}),
           ...(profile ? { profileId } : {}),
+          cdekMetadata: dto.cdekMetadata,
         },
         { transaction },
       );

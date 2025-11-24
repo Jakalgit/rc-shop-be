@@ -9,13 +9,16 @@ import {
   PrimaryKey,
   Table
 } from "sequelize-typescript";
-import { DeliveryMethodEnum } from "../../enums/order/delivery-method.enum";
-import { DeliveryStatusEnum } from "../../enums/order/delivery-status.enum";
-import { PaymentMethodEnum } from "../../enums/order/payment-method.enum";
-import { PaymentStatusEnum } from "../../enums/order/payment-status.enum";
-import { Profile } from "../../profile/models/profile.model";
+import { DeliveryMethodEnum } from "../../../enums/order/delivery-method.enum";
+import { DeliveryStatusEnum } from "../../../enums/order/delivery-status.enum";
+import { PaymentMethodEnum } from "../../../enums/order/payment-method.enum";
+import { PaymentStatusEnum } from "../../../enums/order/payment-status.enum";
+import { Profile } from "../../../profile/models/profile.model";
 import { OrderItem } from "./order_item.model";
-import { OrderStatusEnum } from "../../enums/order/order-status.enum";
+import { OrderStatusEnum } from "../../../enums/order/order-status.enum";
+import {
+  CdekMetadataType
+} from "../types";
 
 export interface OrderCreationAttrs {
   orderNumber: string;
@@ -37,6 +40,7 @@ export interface OrderCreationAttrs {
   comment?: string;
   userAgent?: string;
   profileId?: string;
+  cdekMetadata?: CdekMetadataType;
 }
 
 @Table({tableName: 'orders'})
@@ -109,6 +113,9 @@ export class Order extends Model<Order, OrderCreationAttrs> {
 
   @Column({ type: DataType.STRING })
   ipAddress: string;
+
+  @Column({ type: DataType.JSONB, defaultValue: null })
+  cdekMetadata: CdekMetadataType;
 
   @BelongsTo(() => Profile)
   profile: Profile;

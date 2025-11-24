@@ -1,6 +1,6 @@
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
 import { Order } from "./order.model";
-import { Product } from "../../product/models/product.model";
+import { Product } from "../../../product/models/product.model";
 
 export interface OrderItemCreationAttrs {
   name: string;

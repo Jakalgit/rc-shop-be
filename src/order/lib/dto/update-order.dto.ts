@@ -1,9 +1,9 @@
-import { DeliveryMethodEnum } from "../../enums/order/delivery-method.enum";
-import { DeliveryStatusEnum } from "../../enums/order/delivery-status.enum";
-import { PaymentMethodEnum } from "../../enums/order/payment-method.enum";
-import { PaymentStatusEnum } from "../../enums/order/payment-status.enum";
+import { DeliveryMethodEnum } from "../../../enums/order/delivery-method.enum";
+import { DeliveryStatusEnum } from "../../../enums/order/delivery-status.enum";
+import { PaymentMethodEnum } from "../../../enums/order/payment-method.enum";
+import { PaymentStatusEnum } from "../../../enums/order/payment-status.enum";
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsPhoneNumber } from "class-validator";
-import { OrderStatusEnum } from "../../enums/order/order-status.enum";
+import { OrderStatusEnum } from "../../../enums/order/order-status.enum";
 
 export class UpdateOrderDto {
 

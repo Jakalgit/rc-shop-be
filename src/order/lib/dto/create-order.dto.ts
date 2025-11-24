@@ -1,6 +1,9 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from "class-validator";
-import { DeliveryMethodEnum } from "../../enums/order/delivery-method.enum";
-import { PaymentMethodEnum } from "../../enums/order/payment-method.enum";
+import { IsEmail, IsEnum, IsNotEmpty, IsObject, IsOptional, IsPhoneNumber, IsString } from "class-validator";
+import { DeliveryMethodEnum } from "../../../enums/order/delivery-method.enum";
+import { PaymentMethodEnum } from "../../../enums/order/payment-method.enum";
+import {
+  CdekMetadataType,
+} from "../types";
 
 export class CreateOrderDto {
 
@@ -39,6 +42,10 @@ export class CreateOrderDto {
   @IsOptional()
   @IsString()
   comment: string;
+
+  @IsOptional()
+  @IsObject()
+  cdekMetadata?: CdekMetadataType;
 
   @IsNotEmpty()
   items: {article: string, qty: number}[];
