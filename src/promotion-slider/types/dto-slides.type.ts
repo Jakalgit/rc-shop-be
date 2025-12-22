@@ -1,3 +1,4 @@
+import { SliderTagEnum } from "../enums/slider-tag.enum";
 
 export type NewSlide = {
   filename: string;
@@ -5,6 +6,8 @@ export type NewSlide = {
   title: string,
   text: string,
   buttonText: string,
+  price: number | null;
+  tagType: SliderTagEnum;
 }
 
 export type ExistingSlide = {
@@ -14,4 +17,6 @@ export type ExistingSlide = {
   title: string,
   text: string,
   buttonText: string,
+  price: number | null;
+  tagType: SliderTagEnum;
 }

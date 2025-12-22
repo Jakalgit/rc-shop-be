@@ -64,6 +64,8 @@ export class PromotionSliderService {
             title: el.title,
             text: el.text,
             buttonText: el.buttonText,
+            price: el.price,
+            tagType: el.tagType
           };
         });
 
@@ -99,22 +101,38 @@ export class PromotionSliderService {
         // Формируем список промисов для обновления слайдов
         const promises: Promise<any>[] = [];
 
+        const valuesToCompare: (keyof typeof existingSlides[0])[] = [
+          'index',
+          'href',
+          'tagType',
+          'price'
+        ]
+
         // Определяем, какие слайды нужно обновить (если href или index изменились)
         const slidesToUpdate = existingSlides.map(el => {
           const dbSlide = dbSlides.find(s => s.id === el.id);
-          if (dbSlide.index !== el.index || dbSlide.href !== el.href) {
-            return {
-              id: dbSlide.id,
-              href: el.href,
-              index: el.index,
-            };
+
+          const isDifferent = valuesToCompare.some(v => dbSlide[v] !== el[v]);
+
+          let newObject = {
+            id: dbSlide.id
           }
-        }).filter(Boolean); // Убираем undefined (слайды, которые не нужно обновлять)
+
+          if (isDifferent) {
+            valuesToCompare.forEach((v, _) => {
+              newObject[v] = el[v];
+            })
+
+            return newObject;
+          }
+        }).filter(Boolean) as (ExistingSlide & { index: number })[];
+        // Убираем undefined (слайды, которые не нужно обновлять)
 
         // Создаём промисы для обновления изменённых слайдов
         for (const slide of slidesToUpdate) {
+          const { id, ...rest } = slide;
           promises.push(this.sliderItemRepository.update(
-            { href: slide.href, index: slide.index },
+            { ...rest },
             { where: { id: slide.id }, transaction }
           ));
         }
@@ -158,14 +176,11 @@ export class PromotionSliderService {
     return slides.map(slide => {
       const image = images.find(el => el.id === slide.imageId);
 
+      const { imageId, ...rest } = slide;
+
       return {
-        id: slide.id,
+        ...rest,
         filename: image.filename,
-        href: slide.href,
-        imageId: slide.imageId,
-        text: slide.text,
-        buttonText: slide.buttonText,
-        title: slide.title,
       }
     })
   }

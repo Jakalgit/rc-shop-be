@@ -1,11 +1,14 @@
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
 import { Image } from "../../image/models/image.model";
+import { SliderTagEnum } from "../enums/slider-tag.enum";
 
 export interface SliderItemCreationAttrs {
   href: string;
   title: string;
   text: string;
   buttonText: string;
+  tagType?: SliderTagEnum;
+  price?: number;
   imageId: number;
   index: number;
 }
@@ -27,6 +30,12 @@ export class SliderItem extends Model<SliderItem, SliderItemCreationAttrs> {
 
   @Column({ type: DataType.INTEGER, allowNull: false })
   index: number;
+
+  @Column({ type: DataType.ENUM(...Object.values(SliderTagEnum)), allowNull: false, defaultValue: SliderTagEnum.NONE })
+  tagType: SliderTagEnum;
+
+  @Column({ type: DataType.INTEGER, defaultValue: null })
+  price: number;
 
   @ForeignKey(() => Image)
   @Column({ type: DataType.INTEGER, allowNull: false })
