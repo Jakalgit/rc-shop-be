@@ -12,6 +12,7 @@ import { Profile } from "../profile/models/profile.model";
 import { OrderHelpersService } from "./order-helpers.service";
 import { MailerModule } from "../mailer/mailer.module";
 import { HttpModule } from "@nestjs/axios";
+import { TelegramModule } from "../telegram/telegram.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { HttpModule } from "@nestjs/axios";
     ProductModule,
     MailerModule,
     HttpModule,
+    TelegramModule,
   ],
   providers: [OrderService, OrderHelpersService],
   controllers: [OrderController]

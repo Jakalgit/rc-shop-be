@@ -38,6 +38,10 @@ import { CategoryBlockModule } from './category-block/category-block.module';
 import { CategoryBlock } from "./category-block/models/category-block.model";
 import { CategoryLink } from "./category-block/models/category-link.model";
 import { CategorySubBlock } from "./category-block/models/category-subblock.model";
+import { SupportChatModule } from './support-chat/support-chat.module';
+import { Chat } from "./support-chat/models/chat.model";
+import { ChatMessage } from "./support-chat/models/chat-message.model";
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -57,7 +61,7 @@ import { CategorySubBlock } from "./category-block/models/category-subblock.mode
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         models: [Contact, Product, Tag, TagProduct, Image, Preview, Detail, PageBlock, CategoryBlock, CategoryLink, CategorySubBlock,
-          Group, RepairService, UserRequest, ProductGroup, SliderItem, Profile, Order, OrderItem, OrderAction],
+          Group, RepairService, UserRequest, ProductGroup, SliderItem, Profile, Order, OrderItem, OrderAction, Chat, ChatMessage],
         autoLoadModels: true,
       })
     }),
@@ -75,7 +79,9 @@ import { CategorySubBlock } from "./category-block/models/category-subblock.mode
     RedisModule,
     OrderModule,
     PageBlockModule,
-    CategoryBlockModule
+    CategoryBlockModule,
+    SupportChatModule,
+    TelegramModule
   ],
 })
 export class AppModule {}

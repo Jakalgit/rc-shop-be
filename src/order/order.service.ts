@@ -29,6 +29,7 @@ import { MailerService } from '../mailer/mailer.service';
 import { PaymentMethodEnum } from '../enums/order/payment-method.enum';
 import { CdekDeliveryEnum } from './lib/types';
 import ISOLATION_LEVELS = Transaction.ISOLATION_LEVELS;
+import { TelegramService } from "../telegram/services/telegram.service";
 
 @Injectable()
 export class OrderService {
@@ -48,6 +49,7 @@ export class OrderService {
     private readonly mailerService: MailerService,
     private readonly sequelize: Sequelize,
     private readonly configService: ConfigService,
+    private readonly telegramService: TelegramService,
   ) {
     this.MAIN_HOST = configService.get<string>('MAIN_HOST');
   }
@@ -223,6 +225,12 @@ export class OrderService {
       ]);
 
       await transaction.commit();
+
+      await this.telegramService.sendNewOrderMessage({
+        clientName: `${dto.surname} ${dto.name} ${dto.patronymic}`,
+        orderNumber,
+        subtotal
+      });
     } catch (error) {
       await transaction.rollback();
       throw error;
