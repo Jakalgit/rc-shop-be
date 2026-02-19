@@ -15,6 +15,7 @@ import { ProductHelpersService } from './product-helpers.service';
 import { ProductUpdatesService } from './product-updates.service';
 import { areIndexesUnique } from '../../helpers/areIndexesUnique.';
 import { ProductSortEnum } from '../../enums/product-sort.enum';
+import { ImageService } from "../../image/image.service";
 
 @Injectable()
 export class ProductService {
@@ -28,6 +29,7 @@ export class ProductService {
     private readonly tagService: TagService,
     private readonly productHelpersService: ProductHelpersService,
     private readonly productUpdatesService: ProductUpdatesService,
+    private readonly imageService: ImageService,
     private readonly sequelize: Sequelize,
   ) {}
 
@@ -409,5 +411,44 @@ export class ProductService {
     }
 
     return productsData.records;
+  }
+
+  async deleteProduct(id: string) {
+    const transaction = await this.sequelize.transaction();
+
+    try {
+      const previews = await this.previewRepository.findAll(
+        {
+          where: { productId: id },
+          raw: true
+        });
+
+      await Promise.all([
+        this.detailRepository.destroy({
+          where: { productId: id },
+          transaction,
+        }),
+        this.previewRepository.destroy({
+          where: { productId: id },
+          transaction,
+        })
+      ])
+
+      await this.productRepository.destroy({
+        where: { id },
+        transaction,
+      })
+
+      await this.imageService.deleteImages({
+        imageIds: previews.map(el => el.imageId),
+        transaction
+      });
+
+      await transaction.commit();
+    } catch (error) {
+      await transaction.rollback();
+      console.error(error);
+      throw error;
+    }
   }
 }

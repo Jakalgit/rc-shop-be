@@ -31,7 +31,7 @@ export class Detail extends Model<Detail, DetailCreationAttrs> {
 
   // @Index({ name: 'unique_detail_index_per_product', unique: true })
   @ForeignKey(() => Product)
-  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
+  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false, onDelete: "CASCADE" })
   productId: number;
 
 }

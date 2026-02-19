@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   Param,
   ParseArrayPipe,
@@ -9,8 +9,8 @@ import {
   Query,
   UploadedFiles,
   UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+  UseInterceptors
+} from "@nestjs/common";
 import { ProductService } from './services/product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -57,6 +57,12 @@ export class ProductController {
     };
 
     return this.productService.createProduct(dto, files);
+  }
+
+  @UseGuards(AdminAuthGuard)
+  @Delete('/:id')
+  async deleteProduct(@Param('id') id: string) {
+    return this.productService.deleteProduct(id);
   }
 
   @UseGuards(AdminAuthGuard)
