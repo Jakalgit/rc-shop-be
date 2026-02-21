@@ -9,6 +9,7 @@ import { UpdateGroupDto } from "./dto/update-group.dto";
 import { Op, Transaction } from "sequelize";
 import { TagProduct } from "./models/tag-product.model";
 import { defaultTags, promotionTag } from "../consts/default-tags";
+import { Sequelize } from "sequelize-typescript";
 
 @Injectable()
 export class TagService implements OnModuleInit {
@@ -20,6 +21,7 @@ export class TagService implements OnModuleInit {
     private readonly groupRepository: typeof Group,
     @InjectModel(TagProduct)
     private readonly tagProductRepository: typeof TagProduct,
+    private readonly sequelize: Sequelize,
   ) {
   }
 
@@ -292,9 +294,16 @@ export class TagService implements OnModuleInit {
   // Получение id продуктов которые использую указанные теги
   async getProductIdsForTagIds(tagIds: number[]) {
     const connections = await this.tagProductRepository.findAll({
+      attributes: ['productId'],
       where: {
-        tagId: { [Op.or]: tagIds },
+        tagId: {
+          [Op.in]: tagIds,
+        },
       },
+      group: ['productId'],
+      having: this.sequelize.literal(
+        `COUNT(DISTINCT "tagId") = ${tagIds.length}`
+      ),
       raw: true,
     });
 

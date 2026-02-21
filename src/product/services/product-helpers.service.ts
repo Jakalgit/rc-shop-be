@@ -157,11 +157,17 @@ export class ProductHelpersService {
       productIds = await this.tagService.getProductIdsForTagIds(tagIds);
     }
 
+    if (productIds && productIds.length === 0) {
+      return {
+        records: [],
+        totalPages: 1,
+      };
+    }
+
     const where = {
-      ...(productIds !== undefined &&
-        (productIds.length > 0
+      ...(productIds !== undefined
           ? { id: { [Op.or]: productIds } }
-          : {})),
+          : {}),
       ...(restOptions && (Object.keys(restOptions).length > 0 || Object.getOwnPropertySymbols(restOptions).length > 0)
           ? restOptions
           : {}
