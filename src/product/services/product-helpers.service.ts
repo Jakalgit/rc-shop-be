@@ -214,7 +214,11 @@ export class ProductHelpersService {
       // Ищем данные для наших товаров
       const [details, previews, tags] = await Promise.all([
         this.detailRepository.findAll({
-          where: filter,
+          where: {
+            productId: {
+              [Op.or]: productIds,
+            }
+          },
           raw: true,
         }),
         this.previewRepository.findAll({
@@ -239,11 +243,13 @@ export class ProductHelpersService {
             const { productId, createdAt, updatedAt, detailType, ...rest } =
               item;
             const key = detailType.toLowerCase();
-            acc[key].push({
-              id: rest.id,
-              index: rest.index,
-              text: rest.text,
-            });
+            if (productId === p.id) {
+              acc[key].push({
+                id: rest.id,
+                index: rest.index,
+                text: rest.text,
+              });
+            }
             return acc;
           },
           Object.fromEntries(
