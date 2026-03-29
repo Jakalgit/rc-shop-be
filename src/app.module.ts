@@ -38,9 +38,11 @@ import { CategoryBlockModule } from './category-block/category-block.module';
 import { CategoryBlock } from "./category-block/models/category-block.model";
 import { CategoryLink } from "./category-block/models/category-link.model";
 import { CategorySubBlock } from "./category-block/models/category-subblock.model";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: [path.join(__dirname, '../.env')],
       isGlobal: true,

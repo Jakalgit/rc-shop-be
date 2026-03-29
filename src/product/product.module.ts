@@ -13,16 +13,19 @@ import { Profile } from "../profile/models/profile.model";
 import { ProductHelpersService } from "./services/product-helpers.service";
 import { ProductUpdatesService } from "./services/product-updates.service";
 import { ProductGettersService } from "./services/product.getters.service";
+import { HttpModule } from "@nestjs/axios";
+import { ProductMoiskladService } from "./services/product.moisklad.service";
 
 @Module({
   imports: [
     SequelizeModule.forFeature([Detail, Product, Preview, Image, Profile]),
     TagModule,
     ImageModule,
-    AuthModule
+    AuthModule,
+    HttpModule,
   ],
   controllers: [ProductController],
-  providers: [ProductService, ProductHelpersService, ProductUpdatesService, ProductGettersService],
+  providers: [ProductService, ProductHelpersService, ProductUpdatesService, ProductGettersService, ProductMoiskladService],
   exports: [ProductService, ProductHelpersService]
 })
 export class ProductModule {}
