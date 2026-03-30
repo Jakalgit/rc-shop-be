@@ -84,12 +84,23 @@ export class ProductMoiskladService implements OnModuleInit {
       }
     }
 
-    const promises: Promise<any>[] = [];
-
     if (productsNotAvailable.length > 0) {
-      promises.push(
-        this.productRepository.update(
-          { availability: false },
+      await this.productRepository.update(
+        { availability: false },
+        {
+          where: {
+            id: {
+              [Op.or]: productsNotAvailable
+            }
+          }
+        }
+      )
+    }
+
+    if (productsUpdateCount.length > 0) {
+      for (const updateData of productsUpdateCount) {
+        await this.productRepository.update(
+          { availability: updateData.availability, count: updateData.count },
           {
             where: {
               id: {
@@ -98,26 +109,7 @@ export class ProductMoiskladService implements OnModuleInit {
             }
           }
         )
-      );
-    }
-
-    if (productsUpdateCount.length > 0) {
-      for (const updateData of productsUpdateCount) {
-        promises.push(
-          this.productRepository.update(
-            { availability: updateData.availability, count: updateData.count },
-            {
-              where: {
-                id: {
-                  [Op.or]: productsNotAvailable
-                }
-              }
-            }
-          )
-        )
       }
     }
-
-    await Promise.all(promises);
   }
 }
