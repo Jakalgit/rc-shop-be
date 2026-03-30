@@ -29,30 +29,39 @@ export class ProductMoiskladService implements OnModuleInit {
     const products = await this.productRepository.findAll({ raw: true });
     const basicKey = this.configService.get<number>('MOI_SKLAD_BASIC');
 
+    const allProducts: any[] = [];
     const productsNotAvailable: number[] = [];
     const productsUpdateCount:
       { id: number, count: number, availability: boolean }[] = [];
 
-    let counter = 0;
+    let offset = 0;
+
+    while (true) {
+      const skladProducts: AxiosResponse<MoiSkladProductsResponse> = await firstValueFrom(
+        this.http.get(
+          `https://api.moysklad.ru/api/remap/1.2/entity/assortment?offset=${offset}`,
+          {
+            headers: { Authorization: `Basic ${basicKey}` },
+          })
+      );
+      const skladProductsData = skladProducts.data;
+
+      allProducts.push(skladProductsData.rows);
+
+      offset += 1000;
+
+      if (Number(skladProductsData.meta.size) <= offset) {
+        break;
+      }
+    }
 
     for (const product of products) {
-      const skladProductArticle: AxiosResponse<MoiSkladProductsResponse> = await firstValueFrom(
-        this.http.get(
-          `https://api.moysklad.ru/api/remap/1.2/entity/assortment?filter=article=${product.article}`,
-          {
-            headers: { Authorization: `Basic ${basicKey}` },
-          })
+      const skladProductArticleRes = allProducts.find(
+        el => el.article?.toLowerCase() === product.article.toLowerCase()
       );
-      const skladProductCode: AxiosResponse<MoiSkladProductsResponse> = await firstValueFrom(
-        this.http.get(
-          `https://api.moysklad.ru/api/remap/1.2/entity/assortment?filter=code=${product.article}`,
-          {
-            headers: { Authorization: `Basic ${basicKey}` },
-          })
+      const skladProductCodeRes = allProducts.find(
+        el => el.code?.toLowerCase() === product.article.toLowerCase()
       );
-
-      const skladProductArticleRes = skladProductArticle.data;
-      const skladProductCodeRes = skladProductCode.data;
 
       let skladProduct: any;
 
@@ -72,14 +81,6 @@ export class ProductMoiskladService implements OnModuleInit {
           count: Number(skladProduct.reserve),
           availability: Number(skladProduct.reserve) > 0,
         });
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 100));
-      counter += 1;
-
-      if (counter >= 10) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        counter = 0;
       }
     }
 
