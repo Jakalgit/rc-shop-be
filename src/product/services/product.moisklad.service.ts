@@ -8,6 +8,7 @@ import { MoiSkladProductsResponse } from "../lib/moisklad.types";
 import { Op } from "sequelize";
 import { Cron } from "@nestjs/schedule";
 import { ConfigService } from "@nestjs/config";
+import * as crypto from 'crypto';
 
 @Injectable()
 export class ProductMoiskladService implements OnModuleInit {
@@ -21,7 +22,7 @@ export class ProductMoiskladService implements OnModuleInit {
   }
 
   async onModuleInit(): Promise<void> {
-    await this.compareProducts();
+    // await this.compareProducts();
   }
 
   @Cron('0 0 0,2 * * *')
@@ -104,7 +105,7 @@ export class ProductMoiskladService implements OnModuleInit {
           {
             where: {
               id: {
-                [Op.or]: productsNotAvailable
+                [Op.or]: updateData.id
               }
             }
           }
