@@ -46,7 +46,7 @@ export class ProductMoiskladService implements OnModuleInit {
       );
       const skladProductsData = skladProducts.data;
 
-      allProducts.push(skladProductsData.rows);
+      allProducts.push(...skladProductsData.rows);
 
       offset += 1000;
 
@@ -65,10 +65,10 @@ export class ProductMoiskladService implements OnModuleInit {
 
       let skladProduct: any;
 
-      if (skladProductArticleRes.rows.length > 0) {
-        skladProduct = skladProductArticleRes.rows[0];
-      } else if (skladProductCodeRes.rows.length > 0) {
-        skladProduct = skladProductCodeRes.rows[0];
+      if (skladProductArticleRes) {
+        skladProduct = skladProductArticleRes;
+      } else if (skladProductCodeRes) {
+        skladProduct = skladProductCodeRes;
       }
 
       if (!skladProduct) {
