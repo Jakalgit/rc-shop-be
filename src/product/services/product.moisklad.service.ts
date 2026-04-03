@@ -22,7 +22,7 @@ export class ProductMoiskladService implements OnModuleInit {
   }
 
   async onModuleInit(): Promise<void> {
-    // await this.compareProducts();
+    await this.compareProducts();
   }
 
   @Cron('0 0 0,2 * * *')
@@ -103,11 +103,7 @@ export class ProductMoiskladService implements OnModuleInit {
         await this.productRepository.update(
           { availability: updateData.availability, count: updateData.count },
           {
-            where: {
-              id: {
-                [Op.or]: updateData.id
-              }
-            }
+            where: { id: updateData.id }
           }
         )
       }
