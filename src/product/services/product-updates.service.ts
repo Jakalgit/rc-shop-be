@@ -78,6 +78,24 @@ export class ProductUpdatesService {
       }
     });
 
+    const detailsToAdd = detailsWithIndexes.filter(
+      (el) => typeof el.id === 'undefined',
+    );
+
+    if (detailsToAdd.length > 0) {
+      const detailsBulkCreate = detailsToAdd.map((el) => ({
+        index: el.index,
+        text: el.text,
+        productId,
+        detailType: el.detailType,
+      }));
+
+      await this.detailRepository.bulkCreate(
+        detailsBulkCreate,
+        { transaction },
+      );
+    }
+
     // Ожидаем обновления
     await Promise.all(detailsUpdatePromises);
   }

@@ -25,7 +25,7 @@ export class ProductMoiskladService implements OnModuleInit {
     await this.compareProducts();
   }
 
-  @Cron('0 0 0,2 * * *')
+  @Cron('0 */10 * * * *')
   private async compareProducts() {
     const products = await this.productRepository.findAll({ raw: true });
     const basicKey = this.configService.get<number>('MOI_SKLAD_BASIC');
