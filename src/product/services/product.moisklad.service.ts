@@ -77,10 +77,12 @@ export class ProductMoiskladService implements OnModuleInit {
       }
 
       if (Number(skladProduct.reserve) !== Number(product.count)) {
+        const stock = Number(skladProduct.stock) > 0 ? Number(skladProduct.stock) : 0;
+
         productsUpdateCount.push({
           id: product.id,
-          count: Number(skladProduct.reserve),
-          availability: Number(skladProduct.reserve) > 0,
+          count: stock,
+          availability: stock > 0,
         });
       }
     }
