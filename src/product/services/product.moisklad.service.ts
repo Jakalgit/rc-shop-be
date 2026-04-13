@@ -57,9 +57,6 @@ export class ProductMoiskladService implements OnModuleInit {
     }
 
     for (const product of products) {
-      if (product.article === '71000') {
-        console.log();
-      }
       const skladProductArticleRes = allProducts.find(
         el => el.article?.toLowerCase() === product.article.toLowerCase()
       );
