@@ -57,6 +57,9 @@ export class ProductMoiskladService implements OnModuleInit {
     }
 
     for (const product of products) {
+      if (product.article === '71000') {
+        console.log();
+      }
       const skladProductArticleRes = allProducts.find(
         el => el.article?.toLowerCase() === product.article.toLowerCase()
       );
@@ -76,7 +79,7 @@ export class ProductMoiskladService implements OnModuleInit {
         continue;
       }
 
-      if (Number(skladProduct.reserve) !== Number(product.count)) {
+      if (Number(skladProduct.stock) !== Number(product.count)) {
         const stock = Number(skladProduct.stock) > 0 ? Number(skladProduct.stock) : 0;
 
         productsUpdateCount.push({
