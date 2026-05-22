@@ -10,6 +10,8 @@ import { Cron } from "@nestjs/schedule";
 import { ConfigService } from "@nestjs/config";
 import * as crypto from 'crypto';
 
+const PRICE_FIELD = 'Цена сайт';
+
 @Injectable()
 export class ProductMoiskladService implements OnModuleInit {
 
@@ -33,7 +35,7 @@ export class ProductMoiskladService implements OnModuleInit {
     const allProducts: any[] = [];
     const productsNotAvailable: number[] = [];
     const productsUpdateCount:
-      { id: number, count: number, availability: boolean }[] = [];
+      { id: number, count: number, availability: boolean, price?: number }[] = [];
 
     let offset = 0;
 
@@ -76,14 +78,27 @@ export class ProductMoiskladService implements OnModuleInit {
         continue;
       }
 
+      const priceBlock = skladProduct.salePrices.find(
+        el => el.priceType.name === PRICE_FIELD
+      );
+
       if (Number(skladProduct.stock) !== Number(product.count)) {
         const stock = Number(skladProduct.stock) > 0 ? Number(skladProduct.stock) : 0;
 
-        productsUpdateCount.push({
+        let updateData: { id: number, count: number, availability: boolean, price?: number } = {
           id: product.id,
           count: stock,
           availability: stock > 0,
-        });
+        };
+
+        if (priceBlock?.value > 0) {
+          updateData = {
+            ...updateData,
+            price: priceBlock.value,
+          }
+        }
+
+        productsUpdateCount.push(updateData);
       }
     }
 
@@ -103,7 +118,11 @@ export class ProductMoiskladService implements OnModuleInit {
     if (productsUpdateCount.length > 0) {
       for (const updateData of productsUpdateCount) {
         await this.productRepository.update(
-          { availability: updateData.availability, count: updateData.count },
+          {
+            availability: updateData.availability,
+            count: updateData.count,
+            ...(updateData.price ? { price: updateData.price } : {}),
+          },
           {
             where: { id: updateData.id }
           }
