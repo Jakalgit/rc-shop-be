@@ -34,8 +34,8 @@ export class ProductMoiskladService implements OnModuleInit {
 
     const allProducts: any[] = [];
     const productsNotAvailable: number[] = [];
-    const productsUpdateCount:
-      { id: number, count: number, availability: boolean, price?: number }[] = [];
+    const productsUpdate:
+      { id: number, count?: number, availability?: boolean, price?: number }[] = [];
 
     let offset = 0;
 
@@ -59,6 +59,10 @@ export class ProductMoiskladService implements OnModuleInit {
     }
 
     for (const product of products) {
+      if (product.article.toLowerCase() === 'tra8635') {
+        console.log('ok');
+      }
+
       const skladProductArticleRes = allProducts.find(
         el => el.article?.toLowerCase() === product.article.toLowerCase()
       );
@@ -82,24 +86,25 @@ export class ProductMoiskladService implements OnModuleInit {
         el => el.priceType.name === PRICE_FIELD
       );
 
+      let updateData: { id: number, count?: number, availability?: boolean, price?: number } = undefined;
+
+      if (priceBlock?.value > 0) {
+        updateData = { id: product.id, price: priceBlock.value / 100 };
+      }
+
       if (Number(skladProduct.stock) !== Number(product.count)) {
         const stock = Number(skladProduct.stock) > 0 ? Number(skladProduct.stock) : 0;
 
-        let updateData: { id: number, count: number, availability: boolean, price?: number } = {
+        let updateData: { id: number, count?: number, availability?: boolean, price?: number } = {
           id: product.id,
           count: stock,
           availability: stock > 0,
         };
 
-        if (priceBlock?.value > 0) {
-          updateData = {
-            ...updateData,
-            price: priceBlock.value,
-          }
-        }
-
-        productsUpdateCount.push(updateData);
+        updateData = { ...updateData,  id: product.id, count: stock, availability: stock > 0 };
       }
+
+      if (updateData) productsUpdate.push(updateData);
     }
 
     if (productsNotAvailable.length > 0) {
@@ -115,8 +120,8 @@ export class ProductMoiskladService implements OnModuleInit {
       )
     }
 
-    if (productsUpdateCount.length > 0) {
-      for (const updateData of productsUpdateCount) {
+    if (productsUpdate.length > 0) {
+      for (const updateData of productsUpdate) {
         await this.productRepository.update(
           {
             availability: updateData.availability,
