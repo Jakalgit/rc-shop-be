@@ -95,12 +95,6 @@ export class ProductMoiskladService implements OnModuleInit {
       if (Number(skladProduct.stock) !== Number(product.count)) {
         const stock = Number(skladProduct.stock) > 0 ? Number(skladProduct.stock) : 0;
 
-        let updateData: { id: number, count?: number, availability?: boolean, price?: number } = {
-          id: product.id,
-          count: stock,
-          availability: stock > 0,
-        };
-
         updateData = { ...updateData,  id: product.id, count: stock, availability: stock > 0 };
       }
 
@@ -124,8 +118,8 @@ export class ProductMoiskladService implements OnModuleInit {
       for (const updateData of productsUpdate) {
         await this.productRepository.update(
           {
-            availability: updateData.availability,
-            count: updateData.count,
+            ...(updateData.availability ? { availability: updateData.availability } : {}),
+            ...(updateData.count ? { count: updateData.count } : {}),
             ...(updateData.price ? { price: updateData.price } : {}),
           },
           {
