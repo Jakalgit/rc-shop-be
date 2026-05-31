@@ -59,10 +59,6 @@ export class ProductMoiskladService implements OnModuleInit {
     }
 
     for (const product of products) {
-      if (product.article.toLowerCase() === 'tra8635') {
-        console.log('ok');
-      }
-
       const skladProductArticleRes = allProducts.find(
         el => el.article?.toLowerCase() === product.article.toLowerCase()
       );
@@ -118,9 +114,9 @@ export class ProductMoiskladService implements OnModuleInit {
       for (const updateData of productsUpdate) {
         await this.productRepository.update(
           {
-            ...(updateData.availability ? { availability: updateData.availability } : {}),
-            ...(updateData.count ? { count: updateData.count } : {}),
-            ...(updateData.price ? { price: updateData.price } : {}),
+            ...(typeof updateData.availability !== 'undefined' ? { availability: updateData.availability } : {}),
+            ...(typeof updateData.count !== 'undefined' ? { count: updateData.count } : {}),
+            ...(typeof updateData.price !== 'undefined' ? { price: updateData.price } : {}),
           },
           {
             where: { id: updateData.id }
