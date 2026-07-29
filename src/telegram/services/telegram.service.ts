@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { Telegraf } from "telegraf";
+import { Markup, Telegraf } from "telegraf";
 import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class TelegramService {
-  private bot: Telegraf;
+  private ordersBot: Telegraf;
+  private chatBot: Telegraf;
+  private readonly ADMIN_HOST: string;
 
   constructor(
     private readonly configService: ConfigService,
   ) {
-    this.bot = new Telegraf(configService.get<string>('ORDERS_BOT_TOKEN'));
+    this.ordersBot = new Telegraf(configService.get<string>('ORDERS_BOT_TOKEN'));
+    this.chatBot = new Telegraf(configService.get<string>('CHAT_BOT_TOKEN'));
+    this.ADMIN_HOST = configService.get<string>('ADMIN_HOST');
   }
 
   async sendNewOrderMessage(
@@ -20,19 +24,37 @@ export class TelegramService {
 <b>Сумма заказа:</b> ${subtotal} ₽
     `
 
-    const consumers: number[] = JSON.parse(this.configService.get('HOLDERS_PEER_IDS'))
+    await this.sendToHolders(this.ordersBot, text);
+  }
 
+  async sendSupportChatMessage(
+    { chatId, clientName, message }: { chatId: string; clientName: string; message: string },
+  ): Promise<void> {
+    const text = `<b>Новое сообщение в поддержку!</b>
+<b>От:</b> ${clientName}
+<b>Сообщение:</b> ${message}`;
+
+    const chatUrl = `${this.ADMIN_HOST}/chat-tg/${chatId}`;
+    const replyMarkup = Markup.inlineKeyboard([
+      Markup.button.webApp('Открыть чат', chatUrl),
+    ]);
+
+    await this.sendToHolders(this.chatBot, text, replyMarkup);
+  }
+
+  private async sendToHolders(bot: Telegraf, text: string, extra?: object): Promise<void> {
+    const consumers: number[] = JSON.parse(this.configService.get('HOLDERS_PEER_IDS'));
     const promises: Promise<any>[] = [];
 
     for (const consumer of consumers) {
       try {
         promises.push(
-          this.bot.telegram.sendMessage(
+          bot.telegram.sendMessage(
             consumer,
             text,
-            { parse_mode: 'HTML'}
-          )
-        )
+            { parse_mode: 'HTML', ...extra },
+          ),
+        );
       } catch {}
     }
 

@@ -6,11 +6,13 @@ import { SequelizeModule } from "@nestjs/sequelize";
 import { Chat } from "./models/chat.model";
 import { ChatMessage } from "./models/chat-message.model";
 import { SupportChatGateway } from "./support-chat.gateway";
+import { TelegramModule } from "../telegram/telegram.module";
 
 @Module({
   imports: [
     AuthModule,
     SequelizeModule.forFeature([Chat, ChatMessage]),
+    TelegramModule,
   ],
   controllers: [SupportChatController],
   providers: [SupportChatService, SupportChatGateway],

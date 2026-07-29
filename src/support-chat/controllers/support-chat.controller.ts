@@ -3,6 +3,7 @@ import { CreateChatDto } from "../dto/create-chat.dto";
 import { SendMessageDto } from "../dto/send-message.dto";
 import { SupportChatService } from "../services/support-chat.service";
 import { AdminAuthGuard } from "../../auth/guards/admin-auth.guard";
+import { TgAuthGuard } from "../../auth/guards/tg-auth.guard";
 
 @Controller('support-chat')
 export class SupportChatController {
@@ -28,6 +29,12 @@ export class SupportChatController {
     return this.supportChatService.sendMessage(dto, false);
   }
 
+  @UseGuards(TgAuthGuard)
+  @Post('/send-ad-tg')
+  sendAdminMessageTg(@Body() dto: SendMessageDto) {
+    return this.supportChatService.sendMessage(dto, false);
+  }
+
   @Get('/info/:clientId')
   getChatInfoByClientId(@Param('clientId') clientId: string) {
     return this.supportChatService.getChat(clientId);
@@ -41,6 +48,15 @@ export class SupportChatController {
   @UseGuards(AdminAuthGuard)
   @Get('/chats')
   getChats(
+    @Query('page') page: number = 1,
+    @Query('pageCount') pageCount: number = 12,
+  ) {
+    return this.supportChatService.getChats(page, pageCount);
+  }
+
+  @UseGuards(TgAuthGuard)
+  @Get('/chats-tg')
+  getChatsTg(
     @Query('page') page: number = 1,
     @Query('pageCount') pageCount: number = 12,
   ) {

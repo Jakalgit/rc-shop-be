@@ -7,6 +7,7 @@ import { SendMessageDto } from '../dto/send-message.dto';
 import { SupportChatGateway } from "../support-chat.gateway";
 import { Op } from "sequelize";
 import { Sequelize } from "sequelize-typescript";
+import { TelegramService } from "../../telegram/services/telegram.service";
 
 @Injectable()
 export class SupportChatService {
@@ -17,6 +18,7 @@ export class SupportChatService {
     private readonly chatMessageRepository: typeof ChatMessage,
     private readonly supportChatGateway: SupportChatGateway,
     private readonly sequelize: Sequelize,
+    private readonly telegramService: TelegramService,
   ) {}
 
   async createChat(dto: CreateChatDto) {
@@ -48,12 +50,16 @@ export class SupportChatService {
         );
       }
 
-      await transaction.commit();
-
       this.supportChatGateway.sendToParticipants(dto.clientId, message);
+
+      await transaction.commit();
     } catch (e) {
       await transaction.rollback();
       throw e;
+    }
+
+    if (fromUser) {
+      await this.sendTelegramNotification(chat, messageText);
     }
   }
 
@@ -87,22 +93,28 @@ export class SupportChatService {
     const chats = await this.chatRepository.findAndCountAll({
       limit: pageCount,
       offset: (page - 1) * pageCount,
-      order: [['lastClientMessageTime', 'ASC']],
+      order: [['lastClientMessageTime', 'DESC']],
       raw: true,
     })
 
     const messages = await this.chatMessageRepository.findAll({
-      attributes: [
-        'chatId',
-        [Sequelize.fn('MAX', Sequelize.col('createdAt')), 'createdAt'],
-      ],
+      attributes: ['id', 'chatId', 'message', 'fromUser', 'createdAt'],
       where: {
         chatId: {
           [Op.in]: chats.rows.map(chat => chat.id),
         },
       },
-      group: ['chatId'],
+      order: [['chatId', 'ASC'], ['createdAt', 'DESC']],
+      raw: true,
     });
+
+    // оставляем только первую (самую свежую) запись на каждый chatId
+    const lastMessageByChat: ChatMessage[] = Object.values(
+      messages.reduce((acc, msg) => {
+        if (!acc[msg.chatId]) acc[msg.chatId] = msg;
+        return acc;
+      }, {})
+    );
 
     // Общее количество записей
     const totalRecords = chats.count;
@@ -111,7 +123,7 @@ export class SupportChatService {
     const totalPages = Math.ceil(totalRecords / pageCount);
 
     const records = chats.rows.map(chat => {
-      const message = messages
+      const message = lastMessageByChat
         .find(el => el.chatId === chat.id);
 
       return {
@@ -124,5 +136,13 @@ export class SupportChatService {
       totalPages,
       records,
     }
+  }
+
+  private async sendTelegramNotification(chat: Chat, message: string) {
+    await this.telegramService.sendSupportChatMessage({
+      chatId: chat.clientId,
+      clientName: chat.name,
+      message,
+    });
   }
 }
