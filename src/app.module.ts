@@ -38,7 +38,6 @@ import { CategoryBlockModule } from './category-block/category-block.module';
 import { CategoryBlock } from "./category-block/models/category-block.model";
 import { CategoryLink } from "./category-block/models/category-link.model";
 import { CategorySubBlock } from "./category-block/models/category-subblock.model";
-import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [
@@ -59,7 +58,7 @@ import { ScheduleModule } from "@nestjs/schedule";
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         models: [Contact, Product, Tag, TagProduct, Image, Preview, Detail, PageBlock, CategoryBlock, CategoryLink, CategorySubBlock,
-          Group, RepairService, UserRequest, ProductGroup, SliderItem, Profile, Order, OrderItem, OrderAction],
+          Group, RepairService, UserRequest, ProductGroup, SliderItem, Profile, Order, OrderItem, OrderAction, Chat, ChatMessage],
         autoLoadModels: true,
       })
     }),
@@ -77,7 +76,9 @@ import { ScheduleModule } from "@nestjs/schedule";
     RedisModule,
     OrderModule,
     PageBlockModule,
-    CategoryBlockModule
+    CategoryBlockModule,
+    SupportChatModule,
+    TelegramModule
   ],
 })
 export class AppModule {}

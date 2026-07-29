@@ -41,7 +41,7 @@ export class Product extends Model<Product, ProductCreationAttrs> {
   @Column({ type: DataType.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true })
   id: number;
 
-  // Название товар
+  // Название товара
   @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
