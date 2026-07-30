@@ -112,16 +112,20 @@ export class ProductMoiskladService implements OnModuleInit {
 
     if (productsUpdate.length > 0) {
       for (const updateData of productsUpdate) {
-        await this.productRepository.update(
-          {
-            ...(typeof updateData.availability !== 'undefined' ? { availability: updateData.availability } : {}),
-            ...(typeof updateData.count !== 'undefined' ? { count: updateData.count } : {}),
-            ...(typeof updateData.price !== 'undefined' ? { price: updateData.price } : {}),
-          },
-          {
-            where: { id: updateData.id }
-          }
-        )
+        try {
+          await this.productRepository.update(
+            {
+              ...(typeof updateData.availability !== 'undefined' ? { availability: updateData.availability } : {}),
+              ...(typeof updateData.count !== 'undefined' ? { count: updateData.count } : {}),
+              ...(typeof updateData.price !== 'undefined' ? { price: updateData.price } : {}),
+            },
+            {
+              where: { id: updateData.id }
+            }
+          )
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
   }

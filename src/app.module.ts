@@ -38,6 +38,11 @@ import { CategoryBlockModule } from './category-block/category-block.module';
 import { CategoryBlock } from "./category-block/models/category-block.model";
 import { CategoryLink } from "./category-block/models/category-link.model";
 import { CategorySubBlock } from "./category-block/models/category-subblock.model";
+import { Chat } from "./support-chat/models/chat.model";
+import { ChatMessage } from "./support-chat/models/chat-message.model";
+import { ScheduleModule } from "@nestjs/schedule";
+import { SupportChatModule } from "./support-chat/support-chat.module";
+import { TelegramModule } from "./telegram/telegram.module";
 
 @Module({
   imports: [
