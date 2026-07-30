@@ -4,7 +4,7 @@ import { ChatMessage } from "./models/chat-message.model";
 
 @WebSocketGateway({
   cors: {
-    origin: '*', // для dev
+    origin: ['https://manager.work-rc.ru', 'https://work-rc.ru'], // для dev
     credentials: true,
   },
   namespace: '/ws/chat'
