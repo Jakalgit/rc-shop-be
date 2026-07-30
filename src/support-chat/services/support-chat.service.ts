@@ -50,16 +50,16 @@ export class SupportChatService {
         );
       }
 
-      this.supportChatGateway.sendToParticipants(dto.clientId, message);
-
       await transaction.commit();
+
+      this.supportChatGateway.sendToParticipants(dto.clientId, message);
     } catch (e) {
       await transaction.rollback();
       throw e;
     }
 
     if (fromUser) {
-      await this.sendTelegramNotification(chat, messageText);
+      this.sendTelegramNotification(chat, messageText);
     }
   }
 
