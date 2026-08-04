@@ -88,10 +88,10 @@ export class ProductMoiskladService implements OnModuleInit {
         updateData = { id: product.id, price: priceBlock.value / 100 };
       }
 
-      if (Number(skladProduct.stock) !== Number(product.count)) {
-        const stock = Number(skladProduct.stock) > 0 ? Number(skladProduct.stock) : 0;
+      if (Number(skladProduct.quantity) !== Number(product.count)) {
+        const quantity = Number(skladProduct.quantity) > 0 ? Number(skladProduct.quantity) : 0;
 
-        updateData = { ...updateData,  id: product.id, count: stock, availability: stock > 0 };
+        updateData = { ...updateData,  id: product.id, count: quantity, availability: quantity > 0 };
       }
 
       if (updateData) productsUpdate.push(updateData);
