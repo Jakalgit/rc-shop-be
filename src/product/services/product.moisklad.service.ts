@@ -11,6 +11,7 @@ import { ConfigService } from "@nestjs/config";
 import * as crypto from 'crypto';
 
 const PRICE_FIELD = 'Цена сайт';
+const OPT_PRICE_FIELD = 'Оптовая цена'
 
 @Injectable()
 export class ProductMoiskladService implements OnModuleInit {
@@ -81,11 +82,24 @@ export class ProductMoiskladService implements OnModuleInit {
       const priceBlock = skladProduct.salePrices.find(
         el => el.priceType.name === PRICE_FIELD
       );
+      const optPriceBlock = skladProduct.salePrices.find(
+        el => el.priceType.name === OPT_PRICE_FIELD
+      );
 
-      let updateData: { id: number, count?: number, availability?: boolean, price?: number } = undefined;
+      let updateData: {
+        id: number,
+        count?: number,
+        availability?: boolean,
+        price?: number,
+        wholesalePrice?: number
+      } = undefined;
 
       if (priceBlock?.value > 0) {
         updateData = { id: product.id, price: priceBlock.value / 100 };
+      }
+
+      if (optPriceBlock?.value > 0) {
+        updateData = { ...updateData, id: product.id, wholesalePrice: optPriceBlock.value / 100 };
       }
 
       if (Number(skladProduct.quantity) !== Number(product.count)) {

@@ -226,11 +226,13 @@ export class OrderService {
 
       await transaction.commit();
 
+      /*
       await this.telegramService.sendNewOrderMessage({
         clientName: `${dto.surname} ${dto.name} ${dto.patronymic}`,
         orderNumber,
         subtotal
       });
+       */
     } catch (error) {
       await transaction.rollback();
       throw error;
