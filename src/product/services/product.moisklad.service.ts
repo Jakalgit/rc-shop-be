@@ -36,7 +36,7 @@ export class ProductMoiskladService implements OnModuleInit {
     const allProducts: any[] = [];
     const productsNotAvailable: number[] = [];
     const productsUpdate:
-      { id: number, count?: number, availability?: boolean, price?: number }[] = [];
+      { id: number, count?: number, availability?: boolean, price?: number, wholesalePrice?: number }[] = [];
 
     let offset = 0;
 
@@ -132,6 +132,7 @@ export class ProductMoiskladService implements OnModuleInit {
               ...(typeof updateData.availability !== 'undefined' ? { availability: updateData.availability } : {}),
               ...(typeof updateData.count !== 'undefined' ? { count: updateData.count } : {}),
               ...(typeof updateData.price !== 'undefined' ? { price: updateData.price } : {}),
+              ...(typeof updateData.wholesalePrice !== 'undefined' ? { wholesalePrice: updateData.wholesalePrice } : {}),
             },
             {
               where: { id: updateData.id }
